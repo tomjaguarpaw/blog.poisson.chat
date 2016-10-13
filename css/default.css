@@ -1,8 +1,7 @@
 body {
     background-color: white;
-    color: black;
-    font-size: 16px;
-    margin: 0px auto 0px auto;
+    color: #212121;
+    margin: 0 auto 0 auto;
     width: 600px;
 }
 
@@ -26,7 +25,7 @@ div#header #navigation {
 
 div#header #navigation a {
     color: black;
-    font-size: 18px;
+    font-size: 1.1em;
     font-weight: bold;
     margin-left: 12px;
     text-decoration: none;
@@ -36,30 +35,67 @@ div#header #navigation a {
 div#footer {
     border-top: solid 2px black;
     color: #555;
-    font-size: 12px;
+    font-size: 0.8em;
     margin-top: 30px;
     padding: 12px 0px 12px 0px;
     text-align: right;
 }
 
+h1, h2, h3, h4 {
+    color: black;
+}
+
 h1 {
-    font-size: 24px;
+    font-size: 1.5em;
 }
 
 h2 {
-    font-size: 20px;
+    font-size: 1.2em;
+}
+
+h3 {
+    font-size: 1em;
 }
 
 div.info {
     color: #555;
-    font-size: 14px;
+    font-size: 0.9em;;
     font-style: italic;
 }
 
 pre {
-    margin-left: 20pt;
+    margin-left: 1.5em;
 }
 
 mlabeledtr > mtd:first-child {
     display: table-cell;
+}
+
+p code, span.dt {
+  color: #311B92;
+}
+
+p code {
+  display: inline-block;
+  margin: 0 0.2em;
+}
+
+span.fu, span.ot {
+  color: #9C27B0;
+}
+
+span.kw {
+  color: #4CAF50;
+}
+
+span.st {
+  color: #FF5722;
+}
+
+span.co {
+  color: #616161;
+}
+
+pre {
+  color: black;
 }
