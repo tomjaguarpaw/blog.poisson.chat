@@ -444,7 +444,7 @@ defined here.
 
 \begin{code}
 replicate0 :: Monadoidal m => Int -> m a -> m [a]
-replicate0 0 pq = pure' []
+replicate0 0 _ = pure' []
 replicate0 n pq = imap cons uncons (pq <.> replicate0 (n - 1) pq)
   where
     cons (a, as) = a : as
@@ -540,9 +540,8 @@ instance Profunctor IParser1 where
   rmap f (IParser1 p q) = IParser1 (mapParser f p) q
 \end{code}
 
-Applying two functions at once results in a function with
-a definition identical to ``imap`` (up to the order of arguments), but with a
-more general type:
+Applying two functions at once results in a function equivalent to ``imap`` (up
+to the order of arguments), but with a much more general type:
 
 \begin{code}
 dimap :: Profunctor f => (x -> y) -> (a -> b) -> f y a -> f x b
