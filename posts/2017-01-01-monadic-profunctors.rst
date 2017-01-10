@@ -864,6 +864,256 @@ intList1 = do
   replicate1 n (whitespace *> int)
 \end{code}
 
+A type class based interface
+============================
+
+In the examples above, the only components specific to the application of
+parsing and printing are the "elementary" actions.
+They are then composed using polymorphic combinators.
+
+These combinators require constraints involving general type classes:
+``Profunctor``, ``Applicative`` and ``Monad``.
+The latter two are well-known interfaces against which functional programmers
+compose many sorts of computations.
+We have shown that, contrary to what the initial approach suggested, invertible
+parsers can also implement these type classes.
+
+The abstractness of these constraints suggests that we can use these
+combinators to create bidirectional transformations other than parsers/printers.
+
+From functor to profunctor
+--------------------------
+
+In fact, we have here a generalization of the
+``Functor``/``Applicative``/``Monad`` hierarchy for "unidirectional"
+computations.
+Indeed, every instance ``m`` of ``Functor`` can be lifted to a ``Profunctor``
+by adding a phantom type parameter:
+
+\begin{code}
+data Pro m x a = Pro (m a)
+
+unPro :: Pro m x a -> m a
+unPro (Pro ma) = ma
+
+instance Functor m => Profunctor (Pro m) where
+  lmap _ (Pro ma) = Pro ma
+  rmap f (Pro ma) = Pro (fmap f ma)
+\end{code}
+
+And ``Functor``/``Applicative``/``Monad`` instances are simply inherited:
+
+\begin{code}
+instance Functor m => Functor (Pro m x) where
+  fmap = rmap
+
+instance Applicative m => Applicative (Pro m x) where
+  pure a = Pro (pure a)
+  Pro mf <*> Pro ma = Pro (mf <*> ma)
+
+instance Monad m => Monad (Pro m x) where
+  Pro ma >>= toprob = Pro (ma >>= (unPro . toprob))
+\end{code}
+
+We can recognize that construction to be equivalent to the parser component of
+the ``IParser`` type above.
+Similarly, if we focus on the printer component, we obtain another
+general way to turn a functor into a profunctor.
+
+\begin{code}
+-- As it's named by the profunctors package.
+data Star n x a = Star (x -> n a)
+
+unStar :: Star n x a -> x -> n a
+unStar (Star q) = q
+
+instance Functor n => Profunctor (Star n) where
+  lmap g (Star q) = Star (q . g)
+  rmap f (Star q) = Star (fmap f . q)
+
+instance Functor n => Functor (Star n x) where
+  fmap = rmap
+
+instance Applicative n => Applicative (Star n x) where
+  pure a = Star (\_ -> pure a)
+  Star qf <*> Star qa = Star (\x -> qf x <*> qa x)
+
+instance Monad n => Monad (Star n x) where
+  Star qa >>= tostarb = Star (\x -> qa x >>= \a -> unStar (tostarb a) x)
+\end{code}
+
+Thus ``IParser`` consists of the product of ``Pro`` and ``Star``,
+respectively specialized to the ``Parser`` and ``Writer w`` monads.
+
+Programming lenses
+==================
+
+A lens is a bidirectional transformation from a source ``s``,
+which can "focus" on a fragment called *view* ``v``, using a function
+``get' :: s -> v``, and reflect an update of the view into the source:
+``put' :: s -> v -> s``.
+
+\begin{code}
+data Lens' s v = Lens'
+  { get' :: s -> v
+  , put' :: v -> s -> s
+  }
+\end{code}
+
+Given two lenses ``lb :: Lens' a b`` and ``lc :: Lens' b c``, we can obtain a
+``Lens' a c``:
+to define ``get'``, from ``a``, we can get ``b`` using the lens ``lb``, and
+then get ``c`` using ``lc``;
+to define ``set'``, an updated ``c`` can be put back into ``b`` using ``lc``,
+and the result again put back into ``a`` using ``lb``.
+In fact, lenses are the morphisms of a category of types.
+
+\begin{code}
+idLens' :: Lens' a a
+idLens' = Lens' (\a -> a) (\_ a -> a)
+
+composeLens' :: Lens' a b -> Lens' b c -> Lens' a c
+composeLens' lb lc = Lens'
+  { get' = get' lc . get' lb
+  , put' = \c a ->
+      let b = get' lb a
+      in put' lb (put' lc c b) a
+  }
+\end{code}
+
+This composition is great to access nested structures.
+
+A more interesting way for us to compose lenses is to access two values in
+parallel from the same source.
+The resulting operator corresponds to ``Monoidal``'s ``(<.>)``.
+
+\begin{code}
+(<.>~) :: Lens' s a -> Lens' s b -> Lens' s (a, b)
+la <.>~ lb = Lens'
+  { get' = \s -> (get' la s, get' lb s)
+  , put' = \(a, b) s -> put' lb b (put' la a s)
+  }
+\end{code}
+
+Like invertible parsers, we can generalize the lens type in order to create an
+instance of ``Applicative`` and ``Monad``.
+First, we may split the invariant parameter ``v`` into a contravariant ``x``
+and a covariant ``a``.
+
+\begin{code}
+data Lens0 s x a = Lens0
+  { get0 :: s -> a
+  , put0 :: x -> s -> s
+  }
+\end{code}
+
+We can recognize that ``s -> _`` is a monad (which can be lifted with ``Pro``),
+and that ``x -> s -> s`` is of the form ``x -> w`` where ``w ~ (s -> s)`` is
+the monoid of endofunctions. The type of ``put0`` is equivalent to
+``x -> Const w a``, and we can transform it as we did for ``Printer``
+to ``x -> Writer w a``, or equivalently, ``Star (Writer (s -> s)) x a``.
+
+\begin{code}
+data Lens s x a = Lens
+  { get :: s -> a
+  , put :: x -> (s -> s, a)
+  }
+
+instance Profunctor (Lens s) where
+  lmap g (Lens get put) = Lens get (put . g)
+  rmap f (Lens get put) = Lens (f . get) ((fmap . fmap) f put)
+
+instance Functor (Lens s x) where
+  fmap = rmap
+
+instance Applicative (Lens s x) where
+  pure a = Lens (\_ -> a) (\_ -> (id, a))
+  lf <*> la = Lens
+    { get = \s -> get lf s (get la s)
+    , put = \x ->
+        let (r , f) = put lf x
+            (r', a) = put la x
+        in (r' . r, f a)
+    }
+
+instance Monad (Lens s x) where
+  la >>= f = Lens
+    { get = \s -> get (f (get la s)) s
+    , put = \x ->
+        let (r , a) = put la x
+            (r', b) = put (f a) x
+        in (r' . r, b)
+    }
+\end{code}
+
+\begin{code}
+composeLens :: Lens s t t -> Lens t x a -> Lens s x a
+composeLens lt la = Lens
+  { get = get la . get lt
+  , put = \x ->
+      let (f, a) = put la x
+          put' s = let (g, _) = put lt (f (get lt s)) in g s
+      in (put', a)
+  }
+\end{code}
+
+Demonstration: a lens to the spine of a tree
+++++++++++++++++++++++++++++++++++++++++++++
+
+Consider a type of trees with values at every node.
+
+\begin{code}
+data Tree a
+  = Leaf
+  | Node a (Tree a) (Tree a)
+\end{code}
+
+Start with crude lenses to get and put values at nodes,
+and to access the children of a node.
+
+\begin{code}
+node :: Lens (Tree a) (Maybe a) (Maybe a)
+node = Lens get put
+  where
+    get Leaf = Nothing
+    get (Node a _ _) = Just a
+    put Nothing = (\_ -> Leaf, Nothing)
+    put (Just a) = (put', Just a)
+      where
+        put' Leaf = Node a Leaf Leaf
+        put' (Node _ l r) = Node a l r
+
+rightChild :: Lens (Tree a) (Tree a) (Tree a)
+rightChild = Lens
+  { get = \(Node _ _ r) -> r
+  , put = \r -> (\(Node a l _) -> Node a l r, r)
+  }
+
+maybeHead :: [a] -> Maybe a
+maybeHead (a : _) = Just a
+maybeHead [] = Nothing
+\end{code}
+
+Then we can compose them to obtain the elements in the right spine of the tree.
+In the put direction, fine grained structural modifications are possible and
+allow to match the lengths of an input list and the spine of the updated tree.
+
+\begin{code}
+spine :: Eq a => Lens (Tree a) [a] [a]
+spine = do
+  m <- maybeHead =. node
+  case m of
+    Nothing -> pure []
+    Just a -> do
+      as <- tail =. (composeLens rightChild spine)
+      pure (a : as)
+\end{code}
+
+- Higher constraints: ForallF Applicative f
+- Codec
+- Generable sets
+- More combinators
+
 ----
 
 Appendix
