@@ -161,3 +161,11 @@ At the time of writing, the conjecture that this class of graphs is
 enumerated by this sequence is not mentioned in the OEIS.
 I suspect this also is not too hard to prove.
 
+March 2, 2017. Update:
+
+  Thanks to Antti Karttunen for the proof[#proof]_ that
+  these sequences are indeed the same.
+
+.. [#proof]
+
+  http://list.seqfan.eu/pipermail/seqfan/2017-March/017314.html
