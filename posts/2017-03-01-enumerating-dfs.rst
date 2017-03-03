@@ -46,25 +46,19 @@ data TreeB = VertexB [EdgeB]
 data EdgeB = TreeB TreeB | BackB Integer
 \end{code}
 
+DFS Trees
+=========
+
 From any undirected graph, we may restructure it as a tree with back edges
 by performing a DFS. In fact, the above type naturally represents DFS of
 undirected *multigraphs*, where a vertex can have many back edges
 pointing to the same ancestor.
 Different DFS can be obtained from the same multigraph,
 depending on the chosen root, and the order in which edges are crossed.
-This is in fact exactly the information which uniquely determine a
-DFS.
 
-Rooted multigraphs
-==================
-
-These are undirected multigraphs with a *root vertex* and a *root edge*
-adjacent to it, such that every vertex is associated with a *cyclic
-permutation* of its adjacent edges.  We shall also not allow one-edge loops.
-
-Thanks to that inductive definition, we can enumerate such graphs. We must
+Thanks to that inductive definition, we can enumerate such trees. We must
 however be careful to avoid back edges pointing past the root of the tree.
-This notion of well-formedness is formalized by generalizing it with
+This notion of well-formedness is formalized by generalizing it with a
 *context*, which is the number of ancestors of the current root.
 
 The ``testing-feat`` package[#testing-feat]_ defines a type ``Enumerate`` to efficiently
