@@ -3,6 +3,7 @@
 import Data.Monoid (mappend)
 
 import Data.Set (delete, insert)
+import Text.Pandoc.Shared (headerShift)
 import Text.Pandoc.Options
   ( Extension(Ext_literate_haskell)
   , ReaderOptions(..)
@@ -39,9 +40,9 @@ main = hakyll $ do
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
-    match "posts/*" $ do
+    match (fromRegex "^(drafts|posts)/") $ do
         route $ setExtension "html"
-        compile $ pandocCompilerWith readerOpts writerOpts
+        compile $ pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls

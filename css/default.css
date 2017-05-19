@@ -71,11 +71,11 @@ mlabeledtr > mtd:first-child {
     display: table-cell;
 }
 
-p code, span.dt {
+ul code, p code, span.dt {
   color: #311B92;
 }
 
-p code {
+ul code, p code {
   display: inline-block;
   margin: 0 0.2em;
 }
