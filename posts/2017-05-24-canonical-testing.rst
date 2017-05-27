@@ -349,14 +349,34 @@ is associative, and has identities.[#kleisli]_
   set monad \\(\\mathcal{P}\\) (a common representation of non-determinism).
   Thus we have a subcategory of the Kleisli category for the power set monad.
 
+A word about emptiness
+++++++++++++++++++++++
+
+For \\(\\alpha \\to \\alpha\\), the empty set is complete because there is only
+one value of that type.
+
+  A type \\(T\\alpha\\to U\\alpha\\) is **trivial** if it has at most
+  one inhabitant, up to observational equivalence.
+
+A related notion is that of test inputs which provide no information at all.
+
+  A test input \\(x\\) is **isotropic** with respect to
+  \\(T\\alpha\\to U\\alpha\\) if the empty set subsumes \\(\\{x\\}\\),
+  i.e., \\(\\forall f, g : T\\alpha\\to U\\alpha. f~x = g~x\\).
+
+\\((0,0)\\) is isotropic with respect to \\(\\alpha\\times\\alpha\\to\\alpha\\).
+Trivial types are those whose inputs are all isotropic.
+
 Canonical test sets
 -------------------
+
+Assume \\(T\\alpha \\to U\\alpha\\) is not trivial.
 
 Ideally, a test set should have no redundancies:
 
   A test set \\(X\\) is a **canonical test set** for \\(T \\alpha \\to U
   \\alpha\\) if every element of the domain \\(\\exists \\alpha. T \\alpha\\)
-  is subsumed by exactly one element of \\(X\\).
+  is either isotropic or subsumed by only one element of \\(X\\).
 
 Clearly enough, a canonical test set strongly subsumes every test set.
 In the examples above, \\(X\\) is a canonical test set.
