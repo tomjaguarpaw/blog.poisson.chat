@@ -385,8 +385,9 @@ is subsumed by neither of \\([0,0,1]\\) or \\([0,1,1]\\) individually, although
 the singleton \\(\\{[0,1,2]\\}\\) is subsumed by the pair
 \\(\\{[0,0,1], [0,1,1]\\}\\).
 
-This appears to be a characterization (or slight generalization) of canonical
-test sets, justifying their "optimality" categorically:
+I would like to find a characterization (or generalization) of canonical test
+sets, justifying their "optimality" categorically. The following seems close,
+but is actually incorrect:
 
   A canonical test set is a terminal object in a category of subsumptions.
 
