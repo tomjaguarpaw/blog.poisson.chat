@@ -372,7 +372,8 @@ Canonical test sets
 
 Assume \\(T\\alpha \\to U\\alpha\\) is not trivial.
 
-Ideally, a test set should have no redundancies:
+Ideally, a test set should have no redundancies. Here is one formulation,
+which may need some improvement:
 
   A test set \\(X\\) is a **canonical test set** for \\(T \\alpha \\to U
   \\alpha\\) if every element of the domain \\(\\exists \\alpha. T \\alpha\\)
@@ -386,12 +387,14 @@ the singleton \\(\\{[0,1,2]\\}\\) is subsumed by the pair
 \\(\\{[0,0,1], [0,1,1]\\}\\).
 
 I would like to find a characterization (or generalization) of canonical test
-sets, justifying their "optimality" categorically. The following seems close,
-but is actually incorrect:
+sets, justifying their "optimality" categorically. The idea of initial/terminal
+objects seems relevant, however in the category described above, subsumptions
+are far from unique: in the case of lists, we can easily construct two
+subsumptions \\(S, S' : Y \\prec X\\), for example with
+\\(S\_{[0,0,1]} = \\{[0,1,2]\\}\\) and \\(S'\_{[0,0,1]} = \\{[0,1,2],[0,1]\\}\\).
 
-  A canonical test set is a terminal object in a category of subsumptions.
-
-No comment.
+Going forward, it appears that we can also compare subsumptions between two
+test sets, and this might give us a 2-category to work with.
 
 Future plans
 ============
