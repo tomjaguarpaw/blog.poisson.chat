@@ -1,0 +1,288 @@
+---
+title: Fuzzing of concurrent programs
+---
+
+.. [#paper]
+
+  `*A randomized scheduler with probabilistic guarantees of finding bugs*`__,
+  Sebastian Burckhardt, Pravesh Kothari, Madanlal Musuvathi, and Santosh Nagarakatte,
+  ASPLOS'10.
+
+.. __: https://www.cs.rutgers.edu/~santosh.nagarakatte/papers/asplos2010.pdf
+
+
+This is a summary of the main theoretical result about Cuzz[#paper]_, a random testing
+tool to find concurrency bugs. It was mentioned in Mayur Naik's `seminar on
+software analysis and testing`__, here at Penn.
+
+.. __: https://cis.upenn.edu/~mhnaik/edu/cis700/index.html
+
+
+Debugging concurrent programs
+=============================
+
+One reason for the difficulty of concurrent programming is because there are so
+many possible ways for threads to interact by interleaving their executions.
+For two threads with 20 instructions each, there are already
+\\(\\binom{40}{20} = 137,846,528,820\\) possible interleavings to consider, and
+that number grows exponentially in the size of the program, so trying
+all interleavings isn't a scalable solution to test concurrent programs.
+
+The next best thing is to try only some interleavings. As always in testing,
+the problem is choosing good test cases.
+
+Of course, if a bug requires our program to execute in a very specific order to
+manifest itself, then we most likely won't catch it.
+But it will also occur very rarely in production, which diminishes its impact.
+
+On the contrary, actual bugs are quite simple in practice, both in concurrent
+and sequential programming:
+the conditions to trigger them can be described succintly, and they involve
+only a small fragment of the program, e.g., "I forgot a lock at line X". We can
+take advantage of that fact, called the "small bug hypothesis".
+
+Concurrency bugs usually happen because a few instructions were executed
+in an order unforeseen by the programmer. So a natural way to
+describe a bug is in terms of ordering constraints between these instructions.
+
+In this post, we shall consider a simplified situation, where programs have no
+loops and no synchronization (threads don't block), to focus more on the
+combinatorial idea at the core of the result. The formalization in the
+paper generalizes it to take these complications into account while
+maintaining the same probabilistic guarantee. I will say a bit more about it in
+the conclusion.
+
+Formally, an *ordering constraint* is an ordered pair of instructions
+\\((X, Y)\\), expressing the requirement that the instruction \\(X\\) must
+execute before instruction \\(Y\\).
+A bug's *depth* is the size of the smallest set of ordering constraints
+sufficient to trigger it. In this setting, the small bug hypothesis
+claims that most bugs that occur in practice have a small depth.
+
+An example
+----------
+
+Consider the following totally artificial two-threaded program,
+Thread 1 does some initial computation during the first \\((r-2)\\) instructions
+and opens a file with handle ``x``. Thread 2 may read it to then do some
+other work in the last \\((s-2)\\) instructions.
+However, Thread 2 is also allowed to run before Thread 1, in which
+case it should not attempt to read from the uninitialized file handle ``x``.
+Thus we added a ``flag`` that Thread 1 switches on when it opens the file,
+so Thread 2 may know whether it is safe to read.
+
+.. code::
+
+  Initial:
+  flag = 0
+  x = null
+  y = null
+
+  |  Thread 1:               |  Thread 2:              |
+  |  1 to r-2:               |  r+1: if (flag == 1)    |
+  |     ...                  |  r+2:   y = read(x)     |
+  |     (r-2 instructions)   |  r+3 to r+s:            |
+  |     ...                  |    ...                  |
+  |  r-1: flag = 1           |    (s-2 instructions)   |
+  |  r  : x = open("file")   |    ...                  |
+
+Since this is a post about testing, there is a bug in that program.
+Thread 1 sets the flag before setting ``x``; if it gets
+interrupted between instructions ``r-1`` and ``r``, Thread 2 may still
+read ``x``. This bug has depth 2: instruction
+``r-1`` must execute before ``r+1``; instruction ``r+2`` before ``r``.
+
+Naively, there are \\(\\binom{r+s}{r}\\) possible interleavings
+of these two threads. How many are buggy? There are \\((s-1)\\),
+depending on when ``r`` is executed.
+If we set \\(r=s=\\frac{k}{2}\\), the proportion of
+buggy programs is asymptotically equivalent to \\(\\frac{k^2}{2^k}\\),
+which decreases exponentially in the size of the program.
+In other words, if you add just one instruction in your program,
+expect to wait twice as long for the bug to appear!
+
+Cuzz: testing with guarantees
+=============================
+
+The high-level idea behind Cuzz is that there is a subset of possible
+interleavings which reveals shallow bugs with a much higher probability than
+with the whole set.
+
+Given a program with \\(n\\) threads and \\(k\\) instructions, we
+show that we can find a bug of depth \\(d\\) with probability at least
+\\(\\frac{1}{nk^{d-1}}\\).
+In particular, for a constant \\(d\\), the denominator is a polynomial
+in the size of the program.
+
+Note that the number \\(nk^{d-1}\\) has a straightforward combinatorial
+interpretation. It's the number *combinations* made of:
+
+- one thread in a set of \\(n\\);
+- a sequence of \\((d-1)\\) instructions[#distinct]_ in a set of \\(k\\).
+
+.. [#distinct]
+
+  We can actually select only sequences of distinct instructions, so
+  the denominator would actually be \\(n\\cdot k(k-1)\\dots(k-d+2)\\),
+  but \\(k\\) is big and \\(d\\) is small, so \\(nk^{d-1}\\)
+  is close enough.
+
+We will explain how to map those combinations to interleavings
+such that any bug of depth \\(d\\) is triggered by at least one of them.
+The probabilistic guarantee which we announced earlier follows by uniform
+sampling of those combinations.
+
+Program scheduling
+------------------
+
+A combination as we described it above can be summarized in the following
+diagram, where ``*`` *marks* the chosen thread and numbers ``#i`` *index* the
+chosen instructions. Here, \\(n=3\\), \\(d=3\\), \\(k=12\\).
+
+.. code::
+
+  |  Thread 1:      |  * Thread 2:    |  Thread 3:      |
+  |  ...            |  ...            |  ...            |
+  |  ... #1         |  ...            |  ...            |
+  |  ...            |  ... #2         |  ...            |
+  |  ...            |  ...            |  ...            |
+
+We assign a *priority number* to each instruction, equal to:
+
+- ``i``, if ``#i`` is the nearest index above it;
+- or ``0``, if the instruction belongs to the marked thread;
+- or ``-t``, if it belongs to an unmarked Thread ``t``.
+
+.. code::
+
+  |  Thread 1:      |  * Thread 2:    |  Thread 3:      |
+  |  ...    %-1     |  ...    % 0     |  ...    %-3     |
+  |  ... #1 % 1     |  ...    % 0     |  ...    %-3     |
+  |  ...    % 1     |  ... #2 % 2     |  ...    %-3     |
+  |  ...    % 1     |  ...    % 2     |  ...    %-3     |
+
+Schedule instructions with the lowest priority numbers first
+to produce an interleaving.[#blocking]_
+
+.. [#blocking]
+
+  Synchronization and control flow would cause issues here,
+  as they prevent the instructions from being executed in
+  an arbitrary order of priority.
+
+.. code::
+
+  |  Thread 1:      |  * Thread 2:    |  Thread 3:      |
+  |                 |                 |  ...    %-3     |
+  |                 |                 |  ...    %-3     |
+  |                 |                 |  ...    %-3     |
+  |                 |                 |  ...    %-3     |
+  |  ...    %-1     |                 |                 |
+  |                 |  ...    % 0     |                 |
+  |                 |  ...    % 0     |                 |
+  |  ... #1 % 1     |                 |                 |
+  |  ...    % 1     |                 |                 |
+  |  ...    % 1     |                 |                 |
+  |                 |  ... #2 % 2     |                 |
+  |                 |  ...    % 2     |                 |
+
+Since there are more interleavings than combinations,
+not all interleavings can be obtained in that way.
+In particular, these interleavings can only context-switch
+\\(n+d-2\\) times; in comparison, it's theoretically possible to context-switch
+once for (almost) every one of the \\(k\\) instructions.
+In the example above, \\(n+d-2 = 3 + 3 - 2 = 4\\).
+
+Finding a bug
+-------------
+
+We now show that any bug of depth \\(d\\) can be found by some
+interleaving of the form above.
+
+A bug of depth \\(d\\) is triggered by an interleaving \\(I\\) satisfying a
+certain set of \\(d\\) ordering constraints \\((X_1,Y_1),\\dots,(X_d,Y_d)\\).
+We can renumber the constraints so that the \\(Y_i\\) appear in the order of
+execution for that interleaving.
+
+.. code::
+
+  |  Thread 1:     |  Thread 2:     |  Thread 3:     |
+  |                |  ...           |                |
+  |                |  ...           |                |
+  |  ...           |                |                |
+  |  X1            |                |                |
+  |                |                |  X2            |
+  |                |                |  Y1            |
+  |                |  ...           |                |
+  |                |  X3            |                |
+  |  Y2            |                |                |
+  |                |                |  ...           |
+  |  ...           |                |                |
+  |                |                |  Y3            |
+
+A combination resulting in an interleaving which satisfies the same
+constraints is given by:
+
+- the thread containing \\(Y_1\\);
+- the instructions \\(Y_2,\\dots,Y_d\\), in that order.
+
+.. code::
+
+  |  Thread 1:     |  Thread 2:     |  * Thread 3:   |
+  |  ...    %-1    |                |                |
+  |  X1     %-1    |                |                |
+  |                |  ...    %-2    |                |
+  |                |  ...    %-2    |                |
+  |                |  ...    %-2    |                |
+  |                |  X3     %-2    |                |
+  |                |                |  X2     % 0    |
+  |                |                |  Y1     % 0    |
+  |                |                |  ...    % 0    |
+  |  Y2  #1 % 1    |                |                |
+  |  ...    % 1    |                |                |
+  |                |                |  Y3  #2 % 2    |
+
+To prove that the constraints are indeed satisfied,
+we may show that for every ordering constraint \\((X_i,Y_i)\\),
+the instruction \\(X_i\\) is above \\(Y_i\\) in the same thread,
+or is in another thread with a smaller priority number than \\(Y_i\\).
+
+Indeed, by construction, \\(Y_i\\) is assigned the
+priority number \\(i-1\\). The only way for \\(X_i\\) to be
+assigned a greater priority number is if there is
+some \\(Y_j\\) above it such that \\(j > i\\).
+This is not possible, because the original interleaving \\(I\\)
+satisfies the ordering constraints, so \\(X_i\\) must have been executed
+before \\(Y_i\\), and the \\(Y\\) were numbered in execution
+order, so \\(Y_i\\) must have been executed before \\(Y_j\\).
+Therefore \\(X_i\\) was executed before \\(Y_j\\), so the latter
+may not appear before the former in program order.
+
+Conclusion
+==========
+
+To finish, a few words about the more general result presented by the paper.
+Programs with potentially blocking operations and arbitrary control flow are
+abstracted as trees of execution traces (i.e., interleavings) of depth \\(k\\),
+rather than sequences of \\(k\\) instructions.
+Then, ordering constraints relate dynamic *events* produced by each thread
+as they progress, instead of static instructions.
+The role of combinations is played more algorithmically by a scheduler
+to pick out a trace which satisfies the ordering constraints and provoke
+a corresponding bug.
+
+The bound of \\(\\frac{1}{nk^{d-1}}\\) for that algorithm is tight.
+As one particular case, for the example at the beginning with a bug of depth 2,
+Cuzz must select the combination of Thread 2 and instruction ``r``, which
+happens with probability exactly \\(\\frac{1}{2k}\\).
+That is also much greater than the \\(1/\\binom{k}{k/2}\\) ratio we
+would get by sampling all possible interleavings uniformly[#scheduler]_.
+Similar extreme examples can be constructed for any triple \\((n,k,d)\\).
+Yet there are many other bugs with looser and more varied ordering constraints
+which can thus be found with probability much higher than that bound.
+
+.. [#scheduler]
+
+  Never mind the fact that common schedulers are biased in ways that make
+  various bugs like the one above even less likely to be found than
+  using uniform distribution.
