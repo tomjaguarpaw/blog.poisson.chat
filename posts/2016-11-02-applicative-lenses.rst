@@ -1,5 +1,5 @@
 ---
-title: Applicative Lenses
+title: Applicative lenses
 ---
 
 This is written in Literate Haskell.

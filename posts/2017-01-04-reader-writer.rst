@@ -1,5 +1,5 @@
 ---
-title: Coupled Reader and Writer
+title: Coupled reader and writer
 ---
 
 Monadic profunctors work to compose invertible parsers and lenses in very

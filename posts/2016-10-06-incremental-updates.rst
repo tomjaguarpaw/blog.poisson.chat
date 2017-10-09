@@ -1,5 +1,5 @@
 ---
-title: Incremental Updates for Efficient Bidirectional Transformations
+title: Incremental updates for efficient bidirectional transformations
 ---
 
 \\[

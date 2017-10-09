@@ -1,5 +1,5 @@
 ---
-title: Better Invertible Syntax Descriptions
+title: Better invertible syntax descriptions
 ---
 
 This is written in Literate Haskell.

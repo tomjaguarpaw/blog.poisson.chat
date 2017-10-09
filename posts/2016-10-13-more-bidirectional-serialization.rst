@@ -1,5 +1,5 @@
 ---
-title: Towards Monadic Bidirectional Serialization, a step back
+title: Towards monadic bidirectional serialization, a step back
 ---
 
 This is written in Literate Haskell.

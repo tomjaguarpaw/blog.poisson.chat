@@ -1,5 +1,5 @@
 ---
-title: Parsing and Unparsing with Lenses
+title: Parsing and unparsing with lenses
 ---
 
 \\[

@@ -1,5 +1,5 @@
 ---
-title: Typeclasses for Bidirectional Serialization
+title: Typeclasses for bidirectional serialization
 ---
 
 This is written in Literate Haskell.

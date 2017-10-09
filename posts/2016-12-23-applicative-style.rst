@@ -1,5 +1,5 @@
 ---
-title: Applicative Style Programming with Profunctors
+title: Applicative style programming with profunctors
 ---
 
 Quite unusually, this post is not written in Literate Haskell.
