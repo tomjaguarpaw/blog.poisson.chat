@@ -115,7 +115,12 @@ In particular, for a constant \\(d\\), the denominator is a polynomial
 in the size of the program.
 
 Note that the number \\(nk^{d-1}\\) has a straightforward combinatorial
-interpretation. It's the number *combinations* made of:
+interpretation. It's the number of *combinations[#combi]_* made of:
+
+.. [#combi]
+
+  The word "combinations" already has a standard definition in combinatorics,
+  but in this blog post I'm giving it a different meaning.
 
 - one thread in a set of \\(n\\);
 - a sequence of \\((d-1)\\) instructions[#distinct]_ in a set of \\(k\\).
@@ -168,7 +173,8 @@ to produce an interleaving.[#blocking]_
 
   Synchronization and control flow would cause issues here,
   as they prevent the instructions from being executed in
-  an arbitrary order of priority.
+  an arbitrary order of priority. That is why we made
+  a simplifying assumption at the beginning.
 
 .. code::
 
