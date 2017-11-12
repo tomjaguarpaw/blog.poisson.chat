@@ -1,5 +1,6 @@
 ---
 title: Performance debugging in aeson
+description: An example of optimizing Haskell programs
 ---
 
 Making aeson run fast

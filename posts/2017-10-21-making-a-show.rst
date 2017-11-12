@@ -1,5 +1,6 @@
 ---
 title: Making a Show with reflection
+description: On deriving type class instances for higher-kinded types
 ---
 
 ``Show`` is one of the most used type classes in Haskell[#uh]_.

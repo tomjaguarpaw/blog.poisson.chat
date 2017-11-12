@@ -23,6 +23,15 @@ writerOpts = defaultHakyllWriterOptions
       writerExtensions defaultHakyllWriterOptions
   }
 
+myFeedConfiguration :: FeedConfiguration
+myFeedConfiguration = FeedConfiguration
+    { feedTitle       = "Lysxia's blog"
+    , feedDescription = "A blog about functional programming and stuff"
+    , feedAuthorName  = "Lysxia"
+    , feedAuthorEmail = "lysxia@gmail.com"
+    , feedRoot        = "http://blog.poisson.chat"
+    }
+
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
@@ -80,6 +89,18 @@ main = hakyll $ do
 
     match "templates/*" $ compile templateCompiler
 
+    create ["rss.xml"] $ do
+      route idRoute
+      compile $ do
+        let feedCtx =
+              postCtx `mappend`
+              field "description" (\post -> do
+                desc <- getMetadataField (itemIdentifier post) "description"
+                return $ case desc of
+                  Just description -> description
+                  Nothing -> "")
+        posts <- fmap (take 10) . recentFirst =<< loadAll "posts/*"
+        renderRss myFeedConfiguration feedCtx posts
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
