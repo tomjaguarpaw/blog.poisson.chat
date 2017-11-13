@@ -361,7 +361,7 @@ rewriting the constructor as I did in ``userReversedCodec``.
 
    -- `The codec package`_
 
-.. _The codec package: codec_
+.. _The codec package: https://hackage.haskell.org/package/codec
 
 Going monad
 ===========
