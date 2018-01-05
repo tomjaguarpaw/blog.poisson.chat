@@ -90,6 +90,10 @@ ul code, p code {
   margin: 0 0.2em;
 }
 
+a code {
+  text-decoration: underline;
+}
+
 span.fu, span.ot {
   color: #9C27B0;
 }
