@@ -133,3 +133,7 @@ td + td {
   text-align: right;
   padding-right: 0.5em;
 }
+
+sup {
+  font-size: 0.8em;
+}
