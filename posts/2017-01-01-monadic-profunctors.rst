@@ -2,6 +2,15 @@
 title: Monadic profunctors for bidirectional programming
 ---
 
+*Preface (updated May 2018)*: This is an unfinished post consolidating ideas
+on *monadic profunctors*. In particular, this post walks step by step from
+simple, "unidirectional" parsers and printers, to a "bidirectional"
+representation, that I've also written about in previous posts.
+Since it kept getting longer with no end in sight, I put this out there
+in this unfinished state. I am working on
+[a few libraries](https://github.com/Lysxia/profunctor-monad),
+for more examples and a more up-to-date preview of this work.
+
 Introduction
 ============
 
