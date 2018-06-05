@@ -2,24 +2,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid (mappend)
 
-import Data.Set (delete, insert)
 import Text.Pandoc.Shared (headerShift)
 import Text.Pandoc.Options
   ( Extension(Ext_literate_haskell)
   , ReaderOptions(..)
   , WriterOptions(..)
+  , disableExtension
+  , enableExtension
   )
 
 import Hakyll
 
 readerOpts = defaultHakyllReaderOptions
-  { readerExtensions = insert Ext_literate_haskell $
+  { readerExtensions = enableExtension Ext_literate_haskell $
       readerExtensions defaultHakyllReaderOptions
   }
 
 -- Turns off Bird-style quote rendering
 writerOpts = defaultHakyllWriterOptions
-  { writerExtensions = delete Ext_literate_haskell $
+  { writerExtensions = disableExtension Ext_literate_haskell $
       writerExtensions defaultHakyllWriterOptions
   }
 
