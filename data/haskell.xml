@@ -9,6 +9,8 @@
     <item>deriving</item>
     <item>do</item>
     <item>else</item>
+    <item>family</item>
+    <item>forall</item>
     <item>if</item>
     <item>in</item>
     <item>infixl</item>
