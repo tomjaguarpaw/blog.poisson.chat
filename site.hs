@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid (mappend)
 
+import Skylighting (addSyntaxDefinition, defaultSyntaxMap, parseSyntaxDefinition)
 import Text.Pandoc.Shared (headerShift)
 import Text.Pandoc.Options
   ( Extension(Ext_literate_haskell)
@@ -35,7 +36,15 @@ myFeedConfiguration = FeedConfiguration
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = hakyll $ do
+main = do
+  f <- parseSyntaxDefinition "data/haskell.xml"
+  writerOpts <- case f of
+    Left e -> fail e
+    Right s -> return $ writerOpts
+      { writerSyntaxMap = addSyntaxDefinition s defaultSyntaxMap
+      }
+
+  hakyll $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
