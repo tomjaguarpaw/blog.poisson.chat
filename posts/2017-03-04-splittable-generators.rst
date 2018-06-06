@@ -21,7 +21,7 @@ to access a source of randomness.
 
   http://hackage.haskell.org/package/MonadRandom
 
-Here is a simplified verion. It consists of a single method to get a random
+Here is a simplified version. It consists of a single method to get a random
 integer. More randomness can be obtained by just calling this multiple times.
 
 \begin{code}
