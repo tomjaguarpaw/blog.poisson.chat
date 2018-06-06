@@ -267,7 +267,7 @@ type family a == b :: Bool where
 \end{code}
 
 Note that type families allow *nonlinear pattern-matching*: the first clause
-matches twice on the same variable. This is not allowed at the value level,
+matches twice on the same variable. This is not allowed at the term level,
 because there is no universal way of comparing values, especially
 infinite values, functions, and values of abstract types such as `IO`.[^1]
 But at the type level, it is possible.
@@ -280,7 +280,7 @@ the type level by the `DataKinds` extension.
 They are disambiguated from type constructors using the single-quote prefix,
 since they can use the same names even in a single module.
 `DataKinds` is the kind[^heh] of extension that is so intuitive one doesn't
-even notice they're using.
+even notice when they're using it.
 
 [^heh]: The fact that "type", "kind" and "sort" are commonly used in this area
   of programming languages makes it sometimes difficult to talk about things.
@@ -402,8 +402,8 @@ type family If (b :: Bool) (c :: k) (d :: k) :: k where
   If 'False _ d = d
 \end{code}
 
-This family is polykinded, which is just another name for polymorphism, just
-for type-level constructs: `If :: forall k. Bool -> k -> k -> k`.
+This family is polykinded, which is just another name for polymorphism
+of type-level constructs: `If :: forall k. Bool -> k -> k -> k`.
 (`PolyKinds` extension; kinds are to types as types are to terms.)
 
 It will take a bit of setup to be able to use `If`, so let's put it aside for
@@ -476,7 +476,7 @@ this assumes that `a` is equal to `b`.
 In the `False` branch, we call `get` on the tail, which requires a
 `Get a bs` constraint.
 We could add it to the context (`(???)` above), but that would imply a
-traversal of the whole type, whereas the behavior of the previous
+traversal of the whole type list, whereas the behavior of the previous
 implementations was to stop as soon as we found the element we are looking for.
 
 One way to view this problem is that the type of `_If` doesn't encode the
