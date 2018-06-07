@@ -45,6 +45,10 @@ main = do
       }
 
   hakyll $ do
+    match "data/favicon.ico" $ do
+        route   (constRoute "favicon.ico")
+        compile copyFileCompiler
+
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
