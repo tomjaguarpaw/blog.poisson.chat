@@ -41,10 +41,6 @@ div#footer {
     text-align: right;
 }
 
-p a {
-  white-space: nowrap;
-}
-
 h1, h2, h3, h4 {
     color: black;
 }
