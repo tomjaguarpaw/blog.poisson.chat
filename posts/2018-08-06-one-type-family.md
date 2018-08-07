@@ -119,10 +119,10 @@ Expected result in `ghci`:
 3
 ```
 
+That is all there is to it, to have type families with only one type family.
+
 From now on, only type family signatures (actually, the `data` type) will be
 given, leaving the `Eval` instances as exercises for the reader.
-
-That is all there is to it, to have type families with only one type family.
 
 First-class type families
 =========================
