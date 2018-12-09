@@ -25,6 +25,7 @@
     <item>type</item>
     <item>where</item>
   </list>
+  <!--
   <list name="prelude function">
     <item>abs</item>
     <item>acos</item>
@@ -306,6 +307,7 @@
     <item>LT</item>
     <item>GT</item>
   </list>
+  -->
   <list name="cpp_keywords">
     <item>defined</item>
     <item>if</item>
@@ -465,10 +467,12 @@
       <DetectChar attribute="C Preprocessor" context="C Preprocessor" char="#" column="0"/>
 
       <keyword attribute="Keyword"          context="#stay" String="keywords" />
+      <!--
       <keyword attribute="Function Prelude" context="#stay" String="prelude function" />
       <keyword attribute="Type Prelude"     context="#stay" String="prelude type" />
       <keyword attribute="Data Prelude"     context="#stay" String="prelude data" />
       <keyword attribute="Class Prelude"    context="#stay" String="prelude class" />
+      -->
 
       <RegExpr attribute="Special"          context="#stay" String="(::|=&gt;|\-&gt;|&lt;\-)" />
       <AnyChar attribute="Special"          context="#stay" String="∷⇒→←∀∃" />
