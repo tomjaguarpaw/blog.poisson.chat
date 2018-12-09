@@ -46,7 +46,7 @@ data Cat iguana = Elephant | Frog (Cat iguana) iguana
 jaguar :: kangaroo -> kangaroo
 jaguar = jaguar jaguar
 
-data Lion nyala = Mackerel nyala (Cat nyala)
+data Lion nyala = Mackerel nyala (Cat (Lion nyala))
 
 opossum :: penguin -> (penguin -> quail -> penguin) -> Cat quail -> penguin
 opossum rooster snail Elephant = rooster
