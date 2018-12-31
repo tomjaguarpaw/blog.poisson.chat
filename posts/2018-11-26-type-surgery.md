@@ -236,7 +236,7 @@ Closing notes
   the `modifyRField` surgery presented here can be implemented as a
   "type-changing lens" from generic-lens (to be released with
   generic-lens-1.1.0.0) plus a unification constraint on the type metadata
-  carried by `GHC.Generics.M1`.
+  carried by `GHC.Generics.M1`.[^glens]
   Other surgeries that add or remove fields and constructors seem less easy to
   express that way though.
 
@@ -246,3 +246,7 @@ Closing notes
 
 - A compilable version of this example can be found [in the library
   repository](https://github.com/Lysxia/generic-data-surgery/blob/master/examples/example-aeson.hs).
+
+[^glens]: *EDIT* 2018-12-31: generic-data now has [a bit of
+  documentation](https://hackage.haskell.org/package/generic-data-0.4.0.0/docs/Generic-Data-Microsurgery.html#g:1)
+  about using generic-lens for surgeries.
