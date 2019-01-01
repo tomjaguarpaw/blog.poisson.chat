@@ -539,7 +539,7 @@
 
       <RegExpr attribute="Pragma"  context="#stay" String="\{-#.*#-\}"/>
       <RegExpr attribute="Comment" context="comments" String="\{-[^#]?" />
-      <RegExpr attribute="Comment" context="comment"  String="--[^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:].*$" />
+      <RegExpr attribute="Comment" context="comment"  String="--([^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:].*)?$" />
     </context>
 
     <!-- Haddock -->
