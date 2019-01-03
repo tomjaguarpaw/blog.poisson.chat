@@ -20,6 +20,8 @@ knowledge of it in this post, but you can read more about it over there:
 [Defunctionalization for the
 win](https://typesandkinds.wordpress.com/2013/04/01/defunctionalization-for-the-win/).
 
+<details class="code-header">
+  <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE
     DataKinds,
@@ -35,6 +37,7 @@ import Data.Kind (Type)
 import GHC.TypeNats (Nat, type (+))
 import GHC.TypeLits (TypeError, ErrorMessage(..))
 \end{code}
+</details>
 
 Summary
 =======

@@ -10,6 +10,8 @@ assumes that all constructor fields are instances of `Eq` and `Show`.
 But if that condition is only broken by one field among many others,
 it would be a waste if the work done by deriving could not be reused.
 
+<details class="code-header">
+  <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -17,6 +19,7 @@ it would be a waste if the work done by deriving could not be reused.
 
 import Data.Coerce (coerce)
 \end{code}
+</details>
 
 Problem example
 ===============

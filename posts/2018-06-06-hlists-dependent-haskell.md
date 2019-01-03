@@ -16,6 +16,8 @@ including the extensions.
 In this post, I will mention most of them when they are used, and explain them
 a bit.
 
+<details class="code-header">
+  <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE
     AllowAmbiguousTypes,
@@ -36,6 +38,7 @@ a bit.
 
 module HLists where
 \end{code}
+</details>
 
 As for those that won't be mentioned later, let's take care of them now briefly.
 
