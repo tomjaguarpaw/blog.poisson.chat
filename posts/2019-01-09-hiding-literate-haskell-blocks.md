@@ -49,7 +49,7 @@ In my opinion, it is occasionally useful to see that bit of code, so rather
 than definitely hiding it in a comment, I choose to put it in a collapsed
 section:
 
-<details class="code-header">
+<details class="code-details">
 <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE Kitchen, TwoBedrooms, BigLivingRoom, Bathroom #-}
@@ -62,7 +62,7 @@ The source looks as follows. This is a plain HTML feature, no CSS or JavaScript
 nonsense: [the `<details>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details).
 
 ```html
-<details class="code-header">
+<details class="code-details">
 <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE Kitchen, TwoBedrooms, BigLivingRoom, Bathroom #-}

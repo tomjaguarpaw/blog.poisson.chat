@@ -16,7 +16,7 @@ including the extensions.
 In this post, I will mention most of them when they are used, and explain them
 a bit.
 
-<details class="code-header">
+<details class="code-details">
   <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE

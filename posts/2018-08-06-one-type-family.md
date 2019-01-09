@@ -20,7 +20,7 @@ knowledge of it in this post, but you can read more about it over there:
 [Defunctionalization for the
 win](https://typesandkinds.wordpress.com/2013/04/01/defunctionalization-for-the-win/).
 
-<details class="code-header">
+<details class="code-details">
   <summary>Extensions and imports for this Literate Haskell file</summary>
 \begin{code}
 {-# LANGUAGE
