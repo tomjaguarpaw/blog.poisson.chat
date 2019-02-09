@@ -63,6 +63,10 @@ main = do
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
+    match "404.html" $ do
+        route idRoute
+        compile copyFileCompiler
+
     match (fromRegex "^(drafts|posts)/") $ do
         route $ setExtension "html"
         compile $ pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
