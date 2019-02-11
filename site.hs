@@ -31,7 +31,7 @@ myFeedConfiguration = FeedConfiguration
     , feedDescription = "A blog about functional programming and stuff"
     , feedAuthorName  = "Lysxia"
     , feedAuthorEmail = "lysxia@gmail.com"
-    , feedRoot        = "http://blog.poisson.chat"
+    , feedRoot        = "https://blog.poisson.chat"
     }
 
 --------------------------------------------------------------------------------
