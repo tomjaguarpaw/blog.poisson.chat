@@ -112,10 +112,11 @@ totally different answer.
 \begin{code}
 {-# LANGUAGE ExplicitForAll #-}
 {-
-  `ExplicitForAll` gives us the luxury of explicit `forall` quantifiers, which
-  is especially useful to make class definitions less confusing, without
-  adding any actual power to the type system, but I would
-  use `forall` even if `RankNTypes` were the only way to enable this.
+  `ExplicitForAll` does not add any actual power to the type system.
+  It gives us the luxury of explicit `forall` quantifiers, which is
+  especially useful to make class definitions less confusing.
+  But I would use `forall` even if `RankNTypes` were the only way
+  to enable this.
 -}
 
 module HigherRankWithClass where
