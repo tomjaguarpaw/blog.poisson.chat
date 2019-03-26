@@ -174,7 +174,7 @@ classes? The main idea is that type classes are a way to attach values to
 types, and you can always make up arbitrary types to attach arbitrary things
 to.[^reductio]
 
-[^reductio]: This is of course a reductionist view of type classes for the sake
+[^reductio]: This is a reductionist view of type classes for the sake
   of this exercise. From the point of view of programming language design,
   there are richer discussions about type classes to be had with questions like
   "should classes have laws?", "how powerful should instance resolution be?",
