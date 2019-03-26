@@ -13,6 +13,13 @@ stack exec lysxia -- build
 # Find your HTML in _site/
 ```
 
+# Load a Literate Haskell post
+
+```
+# Use -x to override the extension.
+stack exec ghci -- -x lhs posts/2018-12-09-naming-abstraction.md
+```
+
 ---
 
 # License information
