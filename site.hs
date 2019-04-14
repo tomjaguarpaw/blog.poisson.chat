@@ -1,6 +1,8 @@
---------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
+
+import Data.Foldable (for_)
 import Data.Monoid (mappend)
+import Data.Traversable (for)
 
 import Skylighting (addSyntaxDefinition, defaultSyntaxMap, parseSyntaxDefinition)
 import Text.Pandoc.Shared (headerShift)
@@ -13,6 +15,20 @@ import Text.Pandoc.Options
   )
 
 import Hakyll
+
+topics :: [(String, String)]
+topics =
+  [ ("haskell", "The Haskell language")
+  , ("haskell-tricks", "Tricks in Haskell")
+  , ("coq", "The Coq language")
+  , ("libraries", "Libraries")
+  , ("theory", "Of theoretical interest")
+  , ("testing", "Testing")
+  , ("bidirectional", "Bidirectional programming")
+  , ("combinatorics", "Combinatorics")
+  , ("blogging", "Blogging")
+  , ("misc", "Unusual topics")
+  ]
 
 readerOpts = defaultHakyllReaderOptions
   { readerExtensions = enableExtension Ext_literate_haskell $
@@ -97,7 +113,6 @@ main = do
             posts <- recentFirst =<< loadAll "posts/*"
             let indexCtx =
                     listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Home"                `mappend`
                     defaultContext
 
             getResourceBody
@@ -106,6 +121,37 @@ main = do
                 >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
+
+    for_ topics $ \(topic, desc) -> do
+      create [fromFilePath ("topic/" <> topic <> ".html")] $ do
+        route idRoute
+        compile $ do
+          posts <- filterKeyword topic =<< recentFirst =<< loadAll "posts/*"
+          let indexCtx
+                =  constField "title" desc
+                <> defaultContext
+          let topicCtx
+                = listField "posts" postCtx (return posts)
+          iden <- getUnderlying
+          Item _ topicTmpl <- load "templates/topic.html"
+          applyTemplate topicTmpl topicCtx (Item iden topicTmpl)
+              >>= loadAndApplyTemplate "templates/default.html" indexCtx
+              >>= relativizeUrls
+
+    match "topics.html" $ do
+      route idRoute
+      compile $ do
+        let topicCtx
+              =  field "topic" (pure . fst . itemBody)
+              <> field "desc"  (pure . snd . itemBody)
+        let indexCtx
+              =  listField "topics" topicCtx (traverse makeItem topics)
+              <> defaultContext
+
+        getResourceBody
+            >>= applyAsTemplate indexCtx
+            >>= loadAndApplyTemplate "templates/default.html" indexCtx
+            >>= relativizeUrls
 
     create ["rss.xml"] $ do
       route idRoute
@@ -126,3 +172,10 @@ postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     defaultContext
 
+filterKeyword :: MonadMetadata m => String -> [Item a] -> m [Item a]
+filterKeyword kw is = do
+  fmap concat . for is $ \i -> do
+    m <- getMetadata (itemIdentifier i)
+    case lookupStringList "keywords" m of
+      Just kws | kw `elem` kws -> pure [i]
+      _ -> pure []
