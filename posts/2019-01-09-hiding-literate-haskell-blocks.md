@@ -1,6 +1,6 @@
 ---
 title: Hiding code blocks in literate programming blogs
-keywords: blogging, HTML, meta
+keywords: [blogging, html]
 description: Hide your extension and imports in Literate Haskell.
 ---
 

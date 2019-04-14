@@ -1,5 +1,6 @@
 ---
 title: Heterogeneous lists with dependent types in Haskell
+keywords: [haskell, haskell-tricks]
 ---
 
 With the help of GHC's many extensions, we can encode simple forms of dependent

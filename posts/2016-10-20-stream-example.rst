@@ -1,5 +1,6 @@
 ---
 title: Typeclasses for bidirectional serialization, an example
+keywords: [haskell, bidirectional]
 ---
 
 This is written in Literate Haskell.

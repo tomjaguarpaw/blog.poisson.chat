@@ -1,5 +1,6 @@
 ---
 title: Better invertible syntax descriptions
+keywords: [haskell, bidirectional]
 ---
 
 This is written in Literate Haskell.

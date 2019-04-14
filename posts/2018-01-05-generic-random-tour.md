@@ -1,6 +1,7 @@
 ---
 title: A quick tour of generic-random
 description: Advertisement for generic programming
+keywords: [haskell, random, libraries]
 ---
 
 Metaprogramming with Generics in Haskell allows us to derive many functions and

@@ -1,5 +1,6 @@
 ---
 title: Applicative lenses
+keywords: [haskell, bidirectional]
 ---
 
 This is written in Literate Haskell.

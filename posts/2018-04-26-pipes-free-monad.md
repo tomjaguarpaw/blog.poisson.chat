@@ -1,5 +1,6 @@
 ---
 title: Pipes define a free monad
+keywords: [haskell, libraries]
 ---
 
 The core type of the [*pipes*](https://hackage.haskell.org/package/pipes)

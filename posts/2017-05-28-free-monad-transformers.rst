@@ -1,5 +1,6 @@
 ---
 title: Free monad transformers
+keywords: [haskell, theory]
 ---
 
 This post explains categorically the free construction of *free monad

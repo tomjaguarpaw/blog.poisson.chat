@@ -1,6 +1,6 @@
 ---
 title: "From C to Interaction trees: Specifying, Verifying, and Testing a networked server (CPP 2019 talk transcript)"
-keywords: Coq, formal verification, testing, network, VST, CertiKOS
+keywords: [coq, formal verification, testing, itrees, VST, CertiKOS]
 ---
 
 This is a transcript of my talk

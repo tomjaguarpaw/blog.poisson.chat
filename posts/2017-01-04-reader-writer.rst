@@ -1,5 +1,6 @@
 ---
 title: Coupled reader and writer
+keywords: [haskell, bidirectional]
 ---
 
 Monadic profunctors work to compose invertible parsers and lenses in very

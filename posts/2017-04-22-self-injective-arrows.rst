@@ -1,5 +1,6 @@
 ---
 title: "Note to myself: a theory of injective arrows"
+keywords: [haskell, bidirectional]
 ---
 
 This post starts off from work that I have yet to publish so it won't make any

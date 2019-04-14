@@ -1,7 +1,7 @@
 ---
 title: Naming abstraction
 description: Abstract naming
-keywords: Haskell, names, quiz
+keywords: [haskell, names, quiz]
 ---
 
 \begin{code}

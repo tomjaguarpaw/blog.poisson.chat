@@ -1,5 +1,6 @@
 ---
 title: Towards monadic bidirectional serialization
+keywords: [haskell, bidirectional]
 ---
 
 This is written in Literate Haskell.

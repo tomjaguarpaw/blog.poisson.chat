@@ -1,6 +1,6 @@
 ---
 title: Higher-rank types in Standard Haskell
-keywords: polymorphism, types, haskell
+keywords: [polymorphism, types, haskell, haskell-tricks]
 description: How to write functions parameterized by polymorphic functions,
   without using language extensions?
 ---

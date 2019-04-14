@@ -1,6 +1,7 @@
 ---
 title: Fuzzing of concurrent programs
 description: An algorithm to find concurrency bugs
+keywords: [concurrency, testing, misc]
 ---
 
 .. [#paper]

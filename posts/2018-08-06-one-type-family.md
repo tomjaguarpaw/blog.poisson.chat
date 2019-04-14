@@ -1,6 +1,6 @@
 ---
 title: Haskell with only one type family
-keywords: haskell, type families
+keywords: [haskell, theory, haskell-tricks, libraries, type families]
 ---
 
 In this post, we will implement open type families with a single actual type

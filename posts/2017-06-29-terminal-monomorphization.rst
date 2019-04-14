@@ -1,5 +1,6 @@
 ---
 title: A terminal view of testing polymorphic functions
+keywords: [haskell, theory, testing, parametricity]
 ---
 
 Parametricity restricts the behavior of a polymorphic function

@@ -1,5 +1,6 @@
 ---
 title: Enumeration of multigraph DFS
+keywords: [haskell, combinatorics, misc]
 ---
 
 This is written in Literate Haskell.[#source]_

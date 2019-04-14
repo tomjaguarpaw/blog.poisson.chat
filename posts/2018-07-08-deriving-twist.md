@@ -1,5 +1,6 @@
 ---
 title: Deriving instances with a twist
+keywords: [haskell, haskell-tricks]
 ---
 
 When defining new data types, instance derivation can generate basic

@@ -1,5 +1,6 @@
 ---
 title: Applicative style programming with profunctors
+keywords: [haskell, bidirectional]
 ---
 
 Quite unusually, this post is not written in Literate Haskell.

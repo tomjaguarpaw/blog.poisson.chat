@@ -1,5 +1,6 @@
 ---
 title: Deriving Show for higher-kinded types
+keywords: [haskell, haskell-tricks]
 ---
 
 In [a previous post](http://blog.poisson.chat/posts/2017-10-21-making-a-show.html),

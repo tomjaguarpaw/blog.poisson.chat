@@ -1,5 +1,6 @@
 ---
 title: Surgery for data types
+keywords: [haskell, libraries, surgery]
 ---
 
 In this post I will show an example of *data type surgery*. Surgeries are

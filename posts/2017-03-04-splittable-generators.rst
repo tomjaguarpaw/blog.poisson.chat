@@ -1,5 +1,6 @@
 ---
 title: Randomness in purely functional programs
+keywords: [haskell, random]
 ---
 
 \begin{code}

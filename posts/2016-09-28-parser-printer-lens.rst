@@ -1,5 +1,6 @@
 ---
 title: Parsing and unparsing with lenses
+keywords: [haskell, bidirectional]
 ---
 
 \\[

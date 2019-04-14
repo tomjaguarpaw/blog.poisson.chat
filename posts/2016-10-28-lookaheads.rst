@@ -1,5 +1,6 @@
 ---
 title: Lookaheads
+keywords: [haskell, bidirectional]
 ---
 
 \begin{code}

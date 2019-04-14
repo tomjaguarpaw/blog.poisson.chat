@@ -1,5 +1,6 @@
 ---
 title: Monadic profunctors for bidirectional programming
+keywords: [haskell, bidirectional]
 ---
 
 Preface

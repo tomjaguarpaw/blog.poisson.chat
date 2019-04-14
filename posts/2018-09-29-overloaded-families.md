@@ -1,5 +1,6 @@
 ---
 title: Overloaded type families
+keywords: [haskell, haskell-tricks, libraries, type families]
 ---
 
 Overloading

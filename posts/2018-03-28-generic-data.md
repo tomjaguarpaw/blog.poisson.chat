@@ -1,5 +1,6 @@
 ---
 title: An old and a new library for generic deriving
+keywords: [haskell, libraries]
 ---
 
 I have just released
