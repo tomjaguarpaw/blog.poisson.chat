@@ -11,7 +11,7 @@ body {
   }
 }
 
-div#header {
+header#top {
     border-bottom: 2px solid black;
     margin-bottom: 30px;
     padding: 12px 0px 12px 0px;
@@ -25,11 +25,11 @@ div#logo a {
     text-decoration: none;
 }
 
-div#header #navigation {
+header#top nav {
     text-align: right;
 }
 
-div#header #navigation a {
+header#top nav a {
     color: black;
     font-size: 1.1em;
     font-weight: bold;
@@ -38,7 +38,7 @@ div#header #navigation a {
     text-transform: uppercase;
 }
 
-div#footer {
+footer {
     border-top: solid 2px black;
     color: #555;
     font-size: 0.8em;
