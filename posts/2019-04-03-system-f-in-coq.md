@@ -37,6 +37,16 @@ Inductive ty (n : nat) : Type := (* ... *).
 Inductive tm (n : nat) (vs : list (ty n)) : ty n -> Type := (* ... *).
 ```
 
+`ty n` contains types with `n` free type variables, given as indices
+from `0` to `n-1`.
+
+`tm n vs` contains terms with `n` free type variables, and with
+free term variables whose types are given by the list `vs`.
+
+In other words, a term encodes not only a term, but actually the full
+derivation of a typing judgement `α1 ... αn ; x1:t1 ... xm:tm ⊢ u : t`,
+with type variables `αi`, and term variables `xi` each of some type `ti`.
+
 Thanks to that, denotational semantics can be defined as actual functions in
 Coq, with pretty straightforward definitions. No proof terms to decompose or
 absurd cases to prove impossible, because they simply don't exist.
