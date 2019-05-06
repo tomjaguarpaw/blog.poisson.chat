@@ -3,6 +3,9 @@ title: Formalization of Reynolds's parametricity theorem in Coq
 keywords: [polymorphism, parametricity, theory, formalization, coq]
 ---
 
+(Actually, this was posted on May 3. I'm leaving this here to not kill existing
+links.)
+
 [I wrote a little formalization of parametricity in
 Coq.](https://github.com/Lysxia/system-F)
 
@@ -150,7 +153,7 @@ imagine that the latter implies the former, but the converse might not be
 provable.
 
 I have been interested in parametricity for quite a while, but this particular
-endeavor was sparked by [my other project](github.com/Lysxia/coq-mtl) of
+endeavor was sparked by [my other project](https://github.com/Lysxia/coq-mtl) of
 formalizing [laws for the *mtl* Haskell
 library](https://github.com/haskell/mtl/issues/5), which at the moment consists
 in finding as many relations as I can between transformers and *mtl* classes.
