@@ -16,6 +16,7 @@
     <item>infixl</item>
     <item>infixr</item>
     <item>instance</item>
+    <item>via</item>
     <item>let</item>
     <item>module</item>
     <item>newtype</item>
