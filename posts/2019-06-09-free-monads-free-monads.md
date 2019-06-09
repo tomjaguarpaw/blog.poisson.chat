@@ -303,9 +303,8 @@ class Functor1 (w :: (k -> Type) -> (l -> Type)) where
   --   map1 f . map1 g = map1 (f . g)
 \end{code}
 
-(Can be found in [the *rank2classes*
-library](https://hackage.haskell.org/package/rank2classes), under the name
-`Functor`.)
+(It is a close sibling of the `Functor` from [the *rank2classes*
+library](https://hackage.haskell.org/package/rank2classes).)
 
 It may help some readers to spell out the categories involved. For every
 index `k`, there is a category where objects are indexed types `f, g` of kind
@@ -581,9 +580,6 @@ class Monad1 (w :: (k -> Type) -> (k -> Type)) where
   --   subst1 k . pure1 = k
   --   subst1 h . subst1 k = subst1 (subst1 h . k)
 \end{code}
-
-(The [*rank2classes*](https://hackage.haskell.org/package/rank2classes) library
-might benefit from this addition.)
 
 [^indexed]: There are different variants of *indexed monads*. This one
 first appears in [*Kleisli Arrows of Outrageous Fortune*
