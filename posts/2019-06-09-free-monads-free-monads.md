@@ -10,7 +10,7 @@ Yo dawg, I herd you like free monads...
 
 It is well known that a free monad is a monad. It is less known that the free
 monad functor, that thing which generates free monads, is also a monad. Let us
-explore of that idea in Haskell. After setting up a background of *indexed
+explore that idea in Haskell. After setting up a background of *indexed
 types*, *the monad of free indexed monads* will be introduced. Ways of smashing
 free monads into themselves will be attempted, in compliance with all rules of
 type-safety.
@@ -625,7 +625,7 @@ the kind of `Free`:
 As we've seen in the section on indexed recursive types, `Fix ArithF` is the
 type of arithmetic expressions, with constructs given by the base functor
 `ArithF`. Furthermore, `Free` is almost like `Fix`: `Free ArithF a` is the type
-of arithmetic expressions with "holes" of type `a`. If you set `a = Void`, the
+of arithmetic expressions with "holes" of type `a`. If we set `a = Void`, the
 empty type, `Free ArithF Void` ("no holes") is isomorphic to `Fix ArithF`.
 The function `(>>=)` fills those holes with expressions: that is substitution.
 
