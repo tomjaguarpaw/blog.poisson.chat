@@ -83,7 +83,7 @@ main = do
         route idRoute
         compile copyFileCompiler
 
-    match (fromRegex "^(drafts|posts)/") $ do
+    match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
         compile $ pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
