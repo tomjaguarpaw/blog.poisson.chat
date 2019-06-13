@@ -147,3 +147,8 @@ sup {
 .code-details > summary {
   color: #AAAAAA;
 }
+
+/* Highlight footnote when accessed via a link. */
+.footnotes :target {
+  background-color: #E2E2E2;
+}
