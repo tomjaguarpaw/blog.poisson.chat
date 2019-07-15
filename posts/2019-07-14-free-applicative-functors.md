@@ -18,7 +18,8 @@ The proof scripts are short (5 lines each, 10 if you really like to spread out
 tactics), and will be mostly omitted from this post.
 
 [^faf]: Free Applicative Functors, by Paolo Capriotti and Ambrus Kaposi, in
-MSFP 2014 ([arxiv](https://arxiv.org/abs/1403.0749)).
+MSFP 2014 ([arxiv](https://arxiv.org/abs/1403.0749)) (previously submitted to
+ICFP 2013, to get the timeline right).
 
 In spite of the apparent simplicity, the formalization involves crucial design
 decisions that are detailed in this post, and making the wrong choice at
@@ -76,12 +77,15 @@ fun x1     x2  ...     xn => v))) ...))
 
 == Comparison with other versions
 
-This is the same definition as that [used by the *free*
+This is the same definition as the "default" one [offered by the *free*
 library](https://hackage.haskell.org/package/free-5.1.1/docs/Control-Applicative-Free.html)
-in Haskell, and interestingly, although the original paper which introduced
+by Edward Kmett in Haskell. The library also includes two other definitions
+(`Free.Fast`, `Free.Final`) with much better asymptotic complexity.
+
+Interestingly, the original paper which introduced
 [free applicative functors](https://arxiv.org/abs/1403.0749),
 by Paolo Capriotti and Ambrus Kaposi, mentions it first (under the name
-`FreeAL`), it is soon replaced with a different one (`FreeA`) where, in the
+`FreeAL`), but it is soon replaced with a different one (`FreeA`) where, in the
 `Ap` constructor, the arrow type `b -> a` goes under `f` instead of `Free f`
 (there is also a mostly inconsequential matter of left or right nesting):
 
@@ -97,7 +101,7 @@ The reason given for choosing `FreeA` is that its `Functor` instance
 `(<*>)`) are easier to define. That is certainly the case for `fmap`,
 since it doesn't need recursion, it simply peels off the first action
 and uses the `Functor` instance of `f`. However, `ap` uses induction on size to
-ensure termination; these complications are easily isolated on paper, but would
+ensure termination; this complication is easily isolated on paper, but would
 be exacerbated in Coq.
 
 Furthermore, proving that `FreeA` is an applicative functor (i.e., it satisfies
@@ -109,14 +113,18 @@ which the parametricity assumption is admissible, or even provable. Admittedly,
 equivalence relations come with their own set of proof-engineering problems
 down the line.
 
-Another difference is that `Free` is *freer* than `FreeA`: `Free f` is an
+One more difference is that `Free` is *freer* than `FreeA`: `Free f` is an
 applicative functor for any indexed type `f : Type -> Type`, not only functors.
 It is the same difference as that between the "free monad" and
 [the "freer monad"](http://okmij.org/ftp/Computation/free-monad.html)
 (it's worth mentioning that both are free monads in the categorical sense, just
 in different categories).
-In Coq, `Free` simplifies the formalization because there is one fewer
-assumption to keep track of in proofs.
+In Coq, `Free`, as opposed to `FreeA`, simplifies the formalization because
+there is one fewer assumption to keep track of in proofs.
+
+See also [Flavours of free applicative
+functors](http://ro-che.info/articles/2013-03-31-flavours-of-free-applicative-functors.html),
+by Roman Cheplyaka.
 
 = Functor
 
@@ -163,17 +171,17 @@ normal form of type `_ = _` is `eq_refl`, but for it to be well-typed the two
 sides of the equality must be convertible[^convertible], and of course `map id`
 is not convertible to `id`.
 Note that the "closed term" assumption is key: we can prove nontrivial
-equations by eliminating variables in the context, and this proof shows that
+equations by eliminating variables in the context, and this argument shows that
 we're stuck if the context is empty.
 
-That is a metalinguistic argument which we cannot prove within Coq.
+That is a metalinguistic argument which cannot be carried out within Coq.
 It would mean proving the negation of that equality, which cannot be
 because that equality is in fact admissible. See also [this discussion of the
 same topic on
 SO](https://stackoverflow.com/questions/35157052/coq-identity-term-which-is-not-eq-refl).
 
-[^closed]: `map id` actually hides some type arguments: `@map f a a id`,
-so we're not actually in an empty context, this can be addressed with a longer
+[^closed]: `map id` hides some type arguments: `@map f a a id`,
+so we're not actually in an empty context. This can be addressed with a longer
 proof, or by specializing it `@map (fun x => x) nat nat id`, since a
 general proof `map id = id` would imply this special case.
 
@@ -184,7 +192,7 @@ words as synonyms, but β is actually only a subset of convertibility. There are
 more rules to unfold definitions and to handle constructs other than `fun`:
 `match`, `let`, `fix`, `cofix`.
 
-Those equations don't hold, does that mean `Free f` not a functor? The
+Those equations don't hold, does that mean `Free f` is not a functor? The
 mismatch is actually in the notation `=`. When we write `=` on paper, we
 pretend that there is such a thing as "equality" and that it has obvious
 properties.
@@ -576,7 +584,7 @@ After β-reduction, we obtain exactly the goal.
 ```coq
   (* ... *)
   apply (@f_equal _ _ (fun l => (fun x' y' z' z0 => l (x' z0) y' z'))) in hyp_1.
-  apply Hyp1.
+  apply hyp_1.
 Qed.
 
 
