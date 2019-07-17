@@ -117,7 +117,7 @@ In particular, for a constant \\(d\\), the denominator is a polynomial
 in the size of the program.
 
 Note that the number \\(nk^{d-1}\\) has a straightforward combinatorial
-interpretation. It's the number of *combinations[#combi]_* made of:
+interpretation. It's the number of *combinations*[#combi]_ made of:
 
 .. [#combi]
 
