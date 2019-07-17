@@ -25,6 +25,7 @@ topics =
   , ("theory", "Of theoretical interest")
   , ("testing", "Testing")
   , ("bidirectional", "Bidirectional programming")
+  , ("art", "Programming of art")
   , ("combinatorics", "Combinatorics")
   , ("blogging", "Blogging")
   , ("misc", "Unusual topics")
