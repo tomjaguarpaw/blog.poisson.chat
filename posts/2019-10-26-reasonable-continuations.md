@@ -336,7 +336,7 @@ pureTrue :: Abortable Bool
 pureTrue = pure True
 \end{code}
 
-`runAbortable` maps both `secondGuess` and `pureTrue` to `Maybe True`,
+`runAbortable` maps both `secondGuess` and `pureTrue` to `Just True`,
 but they behave differently with a continuation which fails on `True` and
 succeeds on `False`.
 
