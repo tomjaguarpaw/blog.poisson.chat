@@ -85,7 +85,7 @@ example4 x = timesThree x (\ y -> 10 < y) where
   timesThree x k = k (3 * x)
 \end{code}
 
-That's was continuation-passing style (CPS) in a nutshell.
+That was continuation-passing style (CPS) in a nutshell.
 
 Functions written in CPS can be composed as follows.
 Let us refactor the comparison `10 < _` into another CPS function
@@ -372,13 +372,13 @@ Remember that the result type `s -> r` is both the result type of the
 continuation, and of the whole computation (`(a -> s -> r) -> s -> r`).
 The whole computation can just call the continuation (with some value `a`) to
 produce a result `s -> r`, or it can first take the parameter `s`, and
-a result `r` by calling the continuation with a different state.
+obtain an `r` by calling the continuation with a different state.
 
 Thus `get` takes that parameter `s`, and feeds it twice to the continuation
-`s -> s -> r`, keeping the state (second argument) unchanged, but also
+`k :: s -> s -> r`, keeping the state (second argument) unchanged, but also
 giving it as the main (first) argument of the subsequent computation.
 The other function, `put` ignores that parameter, and calls the continuation
-`() -> s -> r` with another state given externally.
+`k :: () -> s -> r` with another state given externally.
 
 \begin{code}
 type State s a = forall r. Cont (s -> r) a
@@ -472,6 +472,9 @@ instead, if we make the continuation result type `s -> (s, r)`, we obtain a
 monad](https://hackage.haskell.org/package/tardis-0.4.1.0/docs/Control-Monad-Trans-Tardis.html),
 with one state going forward in time, and one going backwards.
 
+The forward and backward states don't actually have to be the same,
+so we can also generalize `(s -> (s, r))` into `(fw -> (bw, r))`.
+
 \begin{code}
 type Tardis bw fw a = forall r. Cont (fw -> (bw, r)) a
 -- forall r. (a -> fw -> (bw, r)) -> fw -> (bw, r)
@@ -555,9 +558,14 @@ lift u = Cont (\ k -> u >>= k)
 A closely related sibling is the ["codensity" monad
 transformer](https://hackage.haskell.org/package/kan-extensions-5.2/docs/Control-Monad-Codensity.html),
 where `r` is universally quantified, like it is in previous examples.
-Both `ContT` and `CodensityT` can be used to optimize monads that have
-expensive *bind* `(>>=)` operations. We won't say anything about the actual
-differences between `ContT` and `CodensityT`.
+Both `ContT` and `CodensityT` can be used to optimize monads[^optim]
+that have expensive *bind* `(>>=)` operations.
+We won't say anything here about the actual differences between `ContT` and
+`CodensityT`.
+
+[^optim]: *Asymptotic improvement of computations over free monads*,
+  by Janis Voigtländer, MPC 2008.
+  ([PDF](https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf))
 
 \begin{code}
 type CodensityT m a = forall r. Cont (m r) a
