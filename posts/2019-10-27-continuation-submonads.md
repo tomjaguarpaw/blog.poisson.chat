@@ -91,8 +91,9 @@ c >>=? d = (\k -> c (\a -> d a k))
 ```
 
 The second and third law have a common structure.
-Assuming the first law `unlift . lift = id`, an equation
-`(lift . unlift) y = y` expresses the fact that `y` is in the image of `lift`.
+An equation `(lift . unlift) y = y` expresses the fact that `y` is in the image
+of `lift`. If we also assume the first law `unlift . lift = id`,
+that says nothing more.
 
 Another interpretation of the monad laws is now apparent:
 they say that a monad `m` is defined by an injection `lift` into a
