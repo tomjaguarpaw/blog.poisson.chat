@@ -9,8 +9,9 @@ showed off the flexibility of the continuation monad to represent
 various effects. As it turns out, it has a deeper relationship with monads in
 general.
 
-Spoilers: this will not be enlightening if you're not already familiar with
-monads. Or even if you are, actually. That's the joke.
+Disclaimer: this is not a monad tutorial. It will not be enlightening if you're
+not already familiar with monads. Or even if you are, probably.
+That's the joke.
 
 ---
 
