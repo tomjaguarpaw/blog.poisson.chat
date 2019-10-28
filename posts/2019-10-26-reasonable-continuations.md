@@ -218,6 +218,13 @@ They map "future" continuations to "present" continuations.[^predicates]
 
 [^predicates]: This is intimately related to [*predicate transformer
   semantics*](https://en.wikipedia.org/wiki/Predicate_transformer_semantics).
+  There were two relevant papers at ICFP this year where continuations
+  play a great role:
+
+    - *A predicate transformer semantics for effects*,
+      by Wouter Swierstra and Tim Baanen, ICFP 2019. ([PDF](http://www.staff.science.uu.nl/~swier004/publications/2019-icfp-tim.pdf))
+    - *Dijkstra monads for all*,
+      by Kenji Maillard et al., ICFP 2019. ([arxiv](https://arxiv.org/abs/1903.01237))
 
 This suggests to take a look at the fish operator, which
 composes monadic continuations.
@@ -775,5 +782,9 @@ they weren't discussed here, but I think the problems can be overcome.[^local]
 = See also
 
 - Oleg Kiselyov's [page on Continuations](http://okmij.org/ftp/continuations/).
-- [The Mother of all Monads](http://blog.sigfpe.com/2008/12/mother-of-all-monads.html),
+- [*The Mother of all Monads*](http://blog.sigfpe.com/2008/12/mother-of-all-monads.html),
   by Dan Piponi.
+- [*The best refactoring you've never heard
+  of*](http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html)
+  (aka. *Defunctionalize the continuation*),
+  by James Koppel.
