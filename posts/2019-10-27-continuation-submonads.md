@@ -218,7 +218,7 @@ That is an example of a [representation
 theorem](https://en.wikipedia.org/wiki/Representation_theorem),
 where some general structure is reduced to another seemingly more specific one.
 
-Cayley's theorem says that every group on a carrier `a` a subgroup of the group
+Cayley's theorem says that every group on a carrier `a` is a subgroup of the group
 of permutations (bijective functions) `a -> a`, and the associated injection
 `a -> (a -> a)` is exactly the binary operation of the group on `a`.
 
@@ -226,7 +226,52 @@ The Yoneda lemma says that `fmap` is an isomorphism between `m a` and
 `forall r. (a -> r) -> m r` for any functor `m` (into Set).
 
 Here we said that `(>>=)` is a (split mono) morphism from `m a` to
-`forall r. (a -> m r) -> m r` for any monad `m`.[^connect]
+`forall r. (a -> m r) -> m r` for any monad `m`.
 
-[^connect]: There's definitely a deeper connection than a mere notational
-  similarity, but it's not obvious to me how to formalize it.
+---
+
+= Generalized Cayley representation theorem (Update from 2019-11-02) {#cayley}
+
+[As was pointed out to me on reddit](https://www.reddit.com/r/haskell/comments/do1h6c/a_monad_is_just_a_submonad_of_the_continuation/f5mpmjh/),
+<!-- thanks /u/WhistlePayer -->
+this is indeed an application of the generalized Cayley representation theorem.
+This connection is studied in detail in the paper *Notions of Computations as
+Monoids*, by Exequiel Rivas and Mauro Jaskelioff, JFP 2017.
+([PDF](https://www.fceia.unr.edu.ar/~mauro/pubs/Notions_of_Computation_as_Monoids_ext.pdf),
+extended version)
+
+The paper shows how to view applicative functors, arrows and monads as monoids
+in different categories, and how useful constructions arise from common
+abstract concepts such as exponentials, Cayley's theorem, free monoids.
+Below is the shortest summary I could make of Cayley's theorem applied to
+monads.
+
+Cayley's theorem generalizes straightforwardly from groups to monoids, and then
+from monoids (in the category of sets) to monoids in any category with a tensor
+`×` (i.e., a monoidal category) and with exponentials[^expo]:
+a monoid `m`, given by a pair of morphisms `mult : m × m -> m` and `one : 1 -> m`,
+satisfying some conditions, injects into the exponential object `(m -> m)`
+by currying the morphism `mult` as `m -> (m -> m)`.
+
+[^expo]: or rather, it is sufficient for `m` alone to be an exponent, so
+  `(m -> m)` is defined as an object.
+
+Then consider that statement in the category of endofunctors on *Set*, where
+the tensor `×` is functor composition. In this category,
+
+- a monoid is a monad, i.e., a pair `join : m × m -> m` and
+  `pure : 1 -> m` (where `1` is the identity functor);
+
+- the exponential object `(m -> m)` is the *codensity monad* on `m`
+  (which we've been deliberately confusing with `Cont` throughout the post):
+  `CodensityT m a` is the set of natural transformations[^sets] between the
+  functor `a -> m _` and `m`.
+
+[^sets]: which is not always a set, but we care when it is.
+
+```haskell
+type CodensityT m a = forall r. (a -> m r) -> m r
+```
+
+Now, Cayley's theorem translates directly to: a monad is a submonad of the
+codensity monad.
