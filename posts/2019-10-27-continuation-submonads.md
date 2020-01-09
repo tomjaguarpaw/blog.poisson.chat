@@ -246,12 +246,16 @@ abstract concepts such as exponentials, Cayley's theorem, free monoids.
 Below is the shortest summary I could make of Cayley's theorem applied to
 monads.
 
-Cayley's theorem generalizes straightforwardly from groups to monoids, and then
-from monoids (in the category of sets) to monoids in any category with a tensor
-`×` (i.e., a monoidal category) and with exponentials[^expo]:
-a monoid `m`, given by a pair of morphisms `mult : m × m -> m` and `one : 1 -> m`,
-satisfying some conditions, injects into the exponential object `(m -> m)`
-by currying the morphism `mult` as `m -> (m -> m)`.
+Cayley's theorem generalizes straightforwardly from groups to monoids (omitted),
+and then from monoids (in the category of sets) to monoids in any category with
+a tensor `×` (i.e., a monoidal category) and with exponentials[^expo].
+
+A (generalized) *monoid* `m` consists of a pair of morphisms
+`mult : m × m -> m` and `one : 1 -> m`, satisfying some conditions.
+Cayley's theorem constructs an injection from `m` into the exponential
+object `(m -> m)`, by currying the morphism `mult` as `m -> (m -> m)`.
+Said informally, a monoid `m` is a submonoid of the monoid of
+endomorphisms `m -> m`.
 
 [^expo]: or rather, it is sufficient for `m` alone to be an exponent, so
   `(m -> m)` is defined as an object.
