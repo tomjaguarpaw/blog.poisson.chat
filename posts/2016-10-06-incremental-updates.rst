@@ -1,6 +1,7 @@
 ---
 title: Incremental updates for efficient bidirectional transformations
 keywords: [haskell, bidirectional]
+mathjax: true
 ---
 
 \\[

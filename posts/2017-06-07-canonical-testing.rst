@@ -1,6 +1,7 @@
 ---
 title: Canonical testing for polymorphic functions
 keywords: [haskell, theory, testing, parametricity]
+mathjax: true
 ---
 
 Polymorphism is an essential aspect of reusable code: it describes
