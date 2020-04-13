@@ -2,5 +2,7 @@ extra-package-dbs: []
 packages:
 - '.'
 extra-deps:
-- hakyll-4.12.5.2
-resolver: lts-14.3
+- http2-1.6.5
+- warp-3.2.28
+- hakyll-4.13.2.0
+resolver: lts-14.27

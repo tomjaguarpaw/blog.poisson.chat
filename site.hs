@@ -1,8 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE BangPatterns, OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 import Data.Foldable (for_)
+import Data.Functor (($>))
 import Data.Monoid (mappend)
 import Data.Traversable (for)
+import Data.Void (Void)
 
 import Skylighting (addSyntaxDefinition, defaultSyntaxMap, parseSyntaxDefinition)
 import Text.Pandoc.Shared (headerShift)
@@ -14,7 +17,10 @@ import Text.Pandoc.Options
   , enableExtension
   )
 
-import Hakyll
+import Text.Megaparsec (Parsec, parse, anySingle, chunk, eof, errorBundlePretty, (<|>))
+
+import Hakyll hiding (defaultContext)
+import qualified Hakyll
 
 topics :: [(String, String)]
 topics =
@@ -31,12 +37,14 @@ topics =
   , ("misc", "Unusual topics")
   ]
 
+readerOpts :: ReaderOptions
 readerOpts = defaultHakyllReaderOptions
   { readerExtensions = enableExtension Ext_literate_haskell $
       readerExtensions defaultHakyllReaderOptions
   }
 
 -- Turns off Bird-style quote rendering
+writerOpts :: WriterOptions
 writerOpts = defaultHakyllWriterOptions
   { writerExtensions = disableExtension Ext_literate_haskell $
       writerExtensions defaultHakyllWriterOptions
@@ -86,8 +94,10 @@ main = do
 
     match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
-        compile $ pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
+        compile $ do
+          pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= saveSnapshot bodySnapshot
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -157,21 +167,42 @@ main = do
     create ["rss.xml"] $ do
       route idRoute
       compile $ do
+        posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" bodySnapshot
         let feedCtx =
               postCtx `mappend`
-              field "description" (\post -> do
-                desc <- getMetadataField (itemIdentifier post) "description"
-                return $ case desc of
-                  Just description -> description
-                  Nothing -> "")
-        posts <- fmap (take 10) . recentFirst =<< loadAll "posts/*"
+              -- Add full body to RSS
+              field "description" (\post -> return (itemBody post))
         renderRss myFeedConfiguration feedCtx posts
+
+bodySnapshot :: Snapshot
+bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     defaultContext
+
+simplTitle :: String -> String
+simplTitle s =
+  case parse titleParser "" s of
+    Left e -> error (errorBundlePretty e)
+    Right t -> t
+
+-- Drop <code> and </code> tags
+titleParser :: Parsec Void String String
+titleParser =
+  ((chunk "<code>" <|> chunk "</code>") $> id <|> (:) <$> anySingle) <*> titleParser <|>
+  eof $> []
+
+defaultContext :: Context String
+defaultContext =
+  field "txt-title" (\i -> do
+    d <- getMetadataField (itemIdentifier i) "title"
+    case d of
+      Just t -> pure (simplTitle t)
+      Nothing -> pure "") `mappend`
+  Hakyll.defaultContext
 
 filterKeyword :: MonadMetadata m => String -> [Item a] -> m [Item a]
 filterKeyword kw is = do

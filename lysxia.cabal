@@ -19,4 +19,5 @@ executable lysxia
     hakyll,
     pandoc >= 2.0,
     skylighting,
+    megaparsec,
     base
