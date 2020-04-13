@@ -13,7 +13,7 @@ to Haskellers to be an accessible illustration of dependent types.
 = Background
 
 The list functions `head` and `tail` are frowned upon because they are partial
-functions: if they are applied them to the empty list, they will blow up and
+functions: if they are applied to the empty list, they will blow up and
 break your program.
 
 ```haskell
