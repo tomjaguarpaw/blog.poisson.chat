@@ -49,7 +49,7 @@ headMaybe :: [a] -> Maybe a
 tailMaybe :: [a] -> Maybe [a]
 ```
 
-Another variant changes the argument type to be the type of empty lists,
+Another variant changes the argument type to be the type of non-empty lists,
 thus requiring callers to give static evidence that a list is not empty.
 
 ```haskell
@@ -85,7 +85,7 @@ tailTotal (1 ∷ 2 ∷ 3 ∷ []) : List Nat
 `headTotal` and `tailTotal` will be defined in Agda, so they are most
 definitely total.
 And yet they appear to be as convenient to use as the partial `head` and
-`tail`, where they can just be applied to a nonempty list to access its head
+`tail`, where they can just be applied to a non-empty list to access its head
 and tail.
 
 As you might have noticed, this post is an advertisement for dependent types,
@@ -147,7 +147,7 @@ headTotal (x ∷ xs) = ?
 headTotal [] = ?
 ```
 
-In the nonempty case (`x ∷ xs`), we know the head of the list is `x`, of type
+In the non-empty case (`x ∷ xs`), we know the head of the list is `x`, of type
 `a`. Therefore that case is solved.
 
 ```agda
@@ -283,16 +283,16 @@ There is also a
 
 One might question how useful `headTotal` and `tailTotal` really are.
 They may be not so different from `headNonEmpty` and `tailNonEmpty`,
-because they're all only meaningful with nonempty lists: the burden of proof
+because they're all only meaningful with non-empty lists: the burden of proof
 is the same. Even if we added `ERROR` values to cover the `[]` case, the point
 is really to not ever run into that case.
 
 Moreover, to actually get the head out, `headTotal` requires its argument to
-be *definitionally* nonempty, otherwise the ergonomics are not much better than
+be *definitionally* non-empty, otherwise the ergonomics are not much better than
 `headMaybe`.
 In other words, for `headTotal e` to have type `a` rather than
 ``a `ifNotEmpty` e``, the argument `e` must actually be an expression
-which reduces to a nonempty list `e1 :: e2`, but that literally gives us an
+which reduces to a non-empty list `e1 :: e2`, but that literally gives us an
 expression `e1` for the head of the list. Why not use it directly?
 
 The catch is that the expression for the head might be significantly more
