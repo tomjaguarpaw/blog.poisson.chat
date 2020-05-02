@@ -5,6 +5,14 @@ https://blog.poisson.chat
 
 ---
 
+# External dependencies
+
+The blog uses the Python package pygments to highlight Coq code.
+
+```
+pip install --user pygments
+```
+
 # Build
 
 ```
