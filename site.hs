@@ -104,10 +104,11 @@ main = do
     match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
         compile $ do
-          myPandocCompiler
+          (doc, hasCoq) <- myPandocCompiler
+          pure doc
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= saveSnapshot bodySnapshot
-            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= loadAndApplyTemplate "templates/default.html" (boolField "coqstyle" (\_ -> hasCoq) `mappend` postCtx)
             >>= relativizeUrls
 
     {-
@@ -188,14 +189,17 @@ bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
 
-myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String)
-myPandocCompiler =
-  pandocCompilerWithTransformM ?readerOpts ?writerOpts (filterCoq . headerShift 1)
+-- True if the post contains Coq code.
+myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String, Bool)
+myPandocCompiler = do
+  doc <- readPandocWith ?readerOpts =<< getResourceBody
+  -- Filters are very slow, so we only apply them to blogposts containing Coq.
+  let hasCoq = getAny (query isCoqBlock doc)
+      filterCoq = if hasCoq then runFilter else pure
+  doc1 <- traverse (filterCoq . headerShift 1) doc
+  let doc2 = writePandocWith ?writerOpts doc1
+  pure (doc2, hasCoq)
   where
-    -- Filters are very slow, so we only apply them to blogposts containing Coq.
-    filterCoq doc
-      | getAny (query isCoqBlock doc) = runFilter doc
-      | otherwise = pure doc
     runFilter = unsafeRun . applyFilters ?readerOpts [JSONFilter "./coqfilter.py"] ["html"]
     unsafeRun = Hakyll.unsafeCompiler . runIOorExplode
     isCoqBlock (CodeBlock (_, cs, _) _) = Any ("coq" `elem` cs)
