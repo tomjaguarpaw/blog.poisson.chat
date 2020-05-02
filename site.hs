@@ -1,13 +1,18 @@
-{-# LANGUAGE BangPatterns, OverloadedStrings #-}
+{-# LANGUAGE
+    BangPatterns,
+    ImplicitParams,
+    OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 import Data.Foldable (for_)
 import Data.Functor (($>))
-import Data.Monoid (mappend)
+import Data.Monoid (Any(..), mappend)
 import Data.Traversable (for)
 import Data.Void (Void)
 
 import Skylighting (addSyntaxDefinition, defaultSyntaxMap, parseSyntaxDefinition)
+import Text.Pandoc (Block(CodeBlock), runIOorExplode)
+import Text.Pandoc.Filter (Filter(..), applyFilters)
 import Text.Pandoc.Shared (headerShift)
 import Text.Pandoc.Options
   ( Extension(Ext_literate_haskell)
@@ -16,6 +21,7 @@ import Text.Pandoc.Options
   , disableExtension
   , enableExtension
   )
+import Text.Pandoc.Walk (query)
 
 import Text.Megaparsec (Parsec, parse, anySingle, chunk, eof, errorBundlePretty, (<|>))
 
@@ -69,6 +75,9 @@ main = do
       { writerSyntaxMap = addSyntaxDefinition s defaultSyntaxMap
       }
 
+  let ?readerOpts = readerOpts
+  let ?writerOpts = writerOpts
+
   hakyll $ do
     match "data/favicon.ico" $ do
         route   (constRoute "favicon.ico")
@@ -95,7 +104,7 @@ main = do
     match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
         compile $ do
-          pandocCompilerWithTransform readerOpts writerOpts (headerShift 1)
+          myPandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= saveSnapshot bodySnapshot
             >>= loadAndApplyTemplate "templates/default.html" postCtx
@@ -178,6 +187,20 @@ bodySnapshot :: Snapshot
 bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
+
+myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String)
+myPandocCompiler =
+  pandocCompilerWithTransformM ?readerOpts ?writerOpts (filterCoq . headerShift 1)
+  where
+    -- Filters are very slow, so we only apply them to blogposts containing Coq.
+    filterCoq doc
+      | getAny (query isCoqBlock doc) = runFilter doc
+      | otherwise = pure doc
+    runFilter = unsafeRun . applyFilters ?readerOpts [JSONFilter "./coqfilter.py"] ["html"]
+    unsafeRun = Hakyll.unsafeCompiler . runIOorExplode
+    isCoqBlock (CodeBlock (_, cs, _) _) = Any ("coq" `elem` cs)
+    isCoqBlock _ = Any False
+
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`

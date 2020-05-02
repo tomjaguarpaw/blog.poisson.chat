@@ -18,6 +18,7 @@ executable lysxia
   build-depends:
     hakyll,
     pandoc >= 2.0,
+    pandoc-types,
     skylighting,
     megaparsec,
     base

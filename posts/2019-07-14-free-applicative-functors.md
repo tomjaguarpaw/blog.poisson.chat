@@ -44,8 +44,8 @@ The file starts with those two lines which mean that the variables
 `f`, `a`, `b`, `c` have these types wherever they're bound.
 
 ```coq
-Implicit Type f : Type -> Type.
-Implicit Type a b c : Type.
+Implicit Types f : Type -> Type.
+Implicit Types a b c : Type.
 ```
 
 = Free applicative functor
@@ -153,8 +153,8 @@ documentation](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Funct
 you'll find this:
 
 ```
-     map id = id              (map_id_classic)
-map (k ∘ h) = map k ∘ map h   (map_map_classic)
+     map id = id              (* [map_id_classic] *)
+map (k ∘ h) = map k ∘ map h   (* [map_map_classic] *)
 ```
 
 ... with the usual definitions `id = (fun x => x)` and `k ∘ h = (fun x => k (h x))`.
@@ -211,8 +211,8 @@ So instead, we will show that the equations hold pointwise.
 For all `u : Free f a`:
 
 ```
-     map id u = u                 [map_id]
-map (k ∘ h) u = map k (map h u)   [map_map]
+     map id u = u                 (* [map_id] *)
+map (k ∘ h) u = map k (map h u)   (* [map_map] *)
 ```
 
 Often, the `=` symbol on paper can be translated to an equivalence relation in
@@ -235,8 +235,8 @@ something familiar like the following; the `%fun` annotations open a
 scope in which `=` desugars to pointwise `eq` instead of plain `eq`:
 
 ```
-     (map id = id)%fun              [map_id_pointwise]
-(map (k ∘ h) = map k ∘ map h)%fun   [map_map_pointwise]
+     (map id = id)%fun              (* [map_id_pointwise] *)
+(map (k ∘ h) = map k ∘ map h)%fun   (* [map_map_pointwise] *)
 ```
 
 Looking at the categorical definition of a functor, once we reject "equality"
@@ -276,7 +276,7 @@ ornaments](https://personal.cis.strath.ac.uk/conor.mcbride/pub/OAAO/LitOrn.pdf).
 In particular, `ap` is list concatenation, if we ignore the `a` and `b`
 ornaments.
 
-```
+```coq
 ap : Free f (a -> b) -> Free f a -> Free f b`,
 ```
 
@@ -325,7 +325,7 @@ leaves us right back where we started.
 There are several workarounds, and I think the simplest one is to implement
 `liftA2` instead.
 
-```
+```coq
 liftA2 : (a -> b -> c) -> (Free f a -> Free f b -> Free f c)
 ```
 
@@ -337,7 +337,7 @@ application. Indeed, in the `Ap` case, the definition of `liftA2` follows the
 structure of list concatenation (`++`, `app`) quite clearly, we only
 need to fill the hole.
 
-```
+```coq
 liftA2 h (Ap u us) vs = Ap u (liftA2 _ us vs)
    app (cons u us) vs = cons u (app us vs)
 ```
@@ -372,7 +372,7 @@ implementation, and thus the proofs.
 
 The most interesting applicative functor law here is the associativity law:
 
-```
+```coq
 liftA2 _ (liftA2 _ ts us) vs = liftA2 _ ts (liftA2 _ us vs)
 ```
 
@@ -388,14 +388,14 @@ general theorem, and by design the first step of the proof is `induction`.
 On one end of the spectrum, a first candidate is to put the results of `ts`,
 `us`, and `vs` in tuples. The concreteness makes it easy to understand.
 
-```
+```coq
 liftA2 snocpair (liftA2 pair ts us) vs
 =
 liftA2 conspair ts (liftA2 pair us vs)
 
-[liftA2_liftA2_tuple]    <- name of the equation for reference
+(* [liftA2_liftA2_tuple]    <- name of the equation for reference *)
 
-where
+(* where *)
   pair = (fun x y => (x, y))
   snocpair = (fun '(x, y) z => (x, y, z))
   conspair = (fun x '(y, z) => (x, y, z))
@@ -410,7 +410,7 @@ of a suitable "naturality lemma" which is useful to prove at any rate.
 Another approach is to put variables in the left hand side, and then figure out
 what right hand side matches.
 
-```
+```coq
 liftA2 k (liftA2 h ts us) vs = liftA2 _ ts (liftA2 _ us vs)
 ```
 
@@ -421,11 +421,11 @@ because we are so constrained, but also fortunate because we are so
 constrained. This looks like a canonical answer: wrap `us` and `vs` in a `pair`
 so we can freely rearrange the results at the next level.
 
-```
+```coq
 liftA2 k (liftA2 h ts us) vs
   = liftA2 (fun x '(y, z) => k (h x y) z) ts (liftA2 pair us vs)
 
-[liftA2_liftA2_simple]
+(* [liftA2_liftA2_simple] *)
 ```
 
 That is an easy proposition to prove by induction, modulo a few
@@ -449,18 +449,18 @@ insights.
 In this case, a symmetric equation is obtained using different variables for
 the function arguments on both sides.
 
-```
+```coq
 liftA2 i (liftA2 h ts us) vs = liftA2 j ts (liftA2 k us vs)
 
-[liftA2_liftA2]
+(* [liftA2_liftA2] *)
 ```
 
 Now, we need an extra assumption to relate `h`, `i`, `j`, `k`[^names].
 From the structure of the above equation, or from the types of these functions,
 it would be reasonable to suggest the following equation, for all `x`, `y`, and `z`:
 
-```
-i (h x y) z = j x (k y z)   [hyp_0]
+```coq
+i (h x y) z = j x (k y z)   (* [hyp_0] *)
 ```
 
 [^names]: About the choice of variable names, these are the four letters after
@@ -503,7 +503,7 @@ equation are applied to two arguments, we will be left with one `fun` on each
 side. The induction hypothesis gives us the following obligation to prove, for
 all `x'`, `y'`, `z'`:
 
-```
+```coq
 (fun z0 => i (h (x' z0) y') z') = (fun z0 => j (x' z0) (k y' z'))
 ```
 
@@ -526,10 +526,10 @@ have to instantiate them. A normal reaction is to think that idea doesn't even
 make sense. But hey, it works. Thus we bind `x`, `y`, and `z` with `fun` on
 both sides we get the following equation `hyp_1` to replace `hyp_0`.
 
-```
+```coq
 (fun x y z => i (h x y) z) = (fun x y z => j x (k y z))
 
-[hyp_1]
+(* [hyp_1] *)
 ```
 
 Now this is the theorem we can actually prove.
@@ -548,7 +548,7 @@ Theorem liftA2_liftA2 {f a1 a2 a3 b12 b23 c}
 After replaying the first steps of the proof, the goal given to us by the
 induction hypothesis looks like this:
 
-```
+```coq
 (fun x' y' z' z0 => i (h (x' z0) y') z')
 =
 (fun x' y' z' z0 => j (x' z0) (k y' z'))
@@ -560,7 +560,7 @@ extensionality. But here we have specifically fixed our assumption `hyp_1` to
 work around that. We only need to make the two functions of `hyp_1` appear in
 the goal, which is a little exercise in β-expansion.
 
-```
+```coq
 (fun x' y' z' z0 =>
   (fun x y z => i (h x y) z) (x' z0) y' z')
 =
@@ -574,7 +574,7 @@ can manipulate the assumption `hyp_1` to obtain a proposition which β-reduces
 to the goal. Start by representing the context common to both sides of the
 β-expanded goal as a function:
 
-```
+```coq
 fun l => (fun x' y' z' z0 => l (x' z0) y' z')
 ```
 
@@ -618,14 +618,14 @@ assumption, for example `hyp_1`, it implies a lot.
 Let's take another look at `hyp_1`. How might we prove such an equation, in
 order to use `liftA2_liftA2`?
 
-```
+```coq
 (fun x y z => i (h x y) z) = (fun x y z => j x (k y z))
 ```
 
 The corollaries above provide some concrete examples. For example,
 to prove `liftA2_liftA2_tuple`, we use the following instantiation.
 
-```
+```coq
 i := fun xy z => (fst xy, snd xy, z)
 j := fun x yz => (x, fst yz, snd yz)
 h := fun x y => (x, y)   (* h = k = pair *)
@@ -634,7 +634,7 @@ k := fun x y => (x, y)
 
 Then `hyp_1` simplifies to this, which is trivial by reflexivity.
 
-```
+```coq
 (fun x y z => (x, y, z)) = (fun x y z => (x, y, z))
 ```
 
@@ -650,14 +650,14 @@ For example, setting all four of `i`, `j`, `h`, and `k` to
 `add : nat -> nat -> nat`, i.e., `+` (or some other not-too-trivial associative
 operation), we get this unprovable statement:
 
-```
+```coq
 (fun x y z => (x + y) + z) = (fun x y z => x + (y + z))
 ```
 
 As it turns out, the conclusion we would get from that with `liftA2_liftA2`
 is also unprovable:
 
-```
+```coq
 liftA2 add (liftA2 add ts us) vs = liftA2 add ts (listA2 add us vs)
 ```
 
@@ -683,9 +683,9 @@ applicative laws, this implies `eq`uating the functions at the end of the
 lists, and that spells trouble. It would be more intuitive to equate them
 *pointwise*.
 
-```
+```coq
 (fun x1 ... xn => v) = (fun x1 ... xn => w)   (* [eq]uality *)
-forall x1 ... xn, v = w                       (* Pointwise [eq]uality *)
+forall x1 ... xn,  v = w                      (* Pointwise [eq]uality *)
 ```
 
 An extensional version of equality for `Free` terms is nontrivial to
