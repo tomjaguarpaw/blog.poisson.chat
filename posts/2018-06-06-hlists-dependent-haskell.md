@@ -638,3 +638,9 @@ On the same topic
   talk by Stephanie Weirich.
 - [Practical dependent types in Haskell](https://blog.jle.im/entry/practical-dependent-types-in-haskell-1.html),
   blog post by Justin Le.
+- [Decidable propositional equality in Haskell](https://typesandkinds.wordpress.com/2012/12/01/decidable-propositional-equality-in-haskell/),
+  blog post by Richard Eisenberg, about unequality constraints (`(a == b) ~ 'False`).
+- [Dependently typed programming with singletons](https://dl.acm.org/doi/10.1145/2364506.2364522),
+  by Richard Eisenberg and Stephanie Weirich (Haskell Symposium 2012).
+- [Strongly typed heterogeneous collections](http://okmij.org/ftp/Haskell/HList-ext.pdf) (PDF),
+  by Oleg Kiselyov, Ralf Lämmel, and Keean Schupke (Haskell Workshop 2004, extended version).
