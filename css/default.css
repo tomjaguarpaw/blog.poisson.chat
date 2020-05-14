@@ -107,7 +107,10 @@ a code {
   text-decoration: underline;
 }
 
-span.fu, span.ot, span.op {
+span.fu {
+}
+
+span.ot, span.op {
   color: #9C27B0;
 }
 
