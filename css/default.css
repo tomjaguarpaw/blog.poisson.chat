@@ -88,6 +88,8 @@ p {
 
 img {
   display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
   margin-left: auto;
   margin-right: auto;
   max-width: 80%;
@@ -99,12 +101,28 @@ div.info {
     font-style: italic;
 }
 
+figure {
+    margin: 0;
+}
+
+figure:target > figcaption {
+    background-color: lightgray;
+}
+
+figcaption {
+    text-align: right;
+}
+
 pre {
     margin-left: 1.5em;
 }
 
 mlabeledtr > mtd:first-child {
     display: table-cell;
+}
+
+ul, ol {
+    padding-left: 2em;
 }
 
 ul code, p code, span.dt {
@@ -171,7 +189,15 @@ sup {
   color: #AAAAAA;
 }
 
+details {
+  margin-bottom: 1em;
+}
+
 /* Highlight footnote when accessed via a link. */
 .footnotes :target {
   background-color: #E2E2E2;
+}
+
+.nobr {
+    white-space: nowrap;
 }
