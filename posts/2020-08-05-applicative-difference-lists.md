@@ -511,7 +511,7 @@ We also need ways to construct and eliminate them.
 We *lift* elements as singleton lists and *lower* lists into simple actions.
 
 Lifting creates a new `ApDList`, with the invariant that it represents
-a left-associated list of separated by `(<*>)` (the left-associativity is why
+a left-associated list of actions separated by `(<*>)` (the left-associativity is why
 it needs to be a snoc list). That invariant is preserved by the concatenation
 operation we defined just earlier.
 One can easily check that `liftApDList` is the only function in this little
