@@ -387,11 +387,11 @@ That's the magic of parametricity.
 </a>
 </figure>
 
+== The analogy with difference lists
+
 The first thing to note is that since we've replaced the list
 constructor `(:)` with <span class="nobr">`(<*>)`,</span> actions `f x` represent both individual
 list elements `a` and whole lists `[a]`.
-
-== The analogy with difference lists
 
 We will draw the analogy between simple difference lists and applicative
 difference lists by *erasure*. Erase the type parameter of `f`, and anything
@@ -399,14 +399,18 @@ that has something to do with that parameter.
 What is left is basically the code of `DList`, carefully replacing `f` with `a`
 or `[a]` as is appropriate.[^monoids]
 
+A first example is that `(<*>)` thus corresponds to both `flip (:)`
+and `(++)`
+(`flip (:)` because as we will soon see, we are really building snoc lists here).
+
 [^monoids]: This analogy would be tighter with an abstract monoid instead of lists.
 
 ```haskell
 -- (<*>) vs (:) and (++)
-(<*>) :: f (x -> y) -> f x -> f y
-      :: f          -> f   -> f     -- erased
-(:)   :: a          -> [a] -> [a]
-(++)  :: [a]        -> [a] -> [a]
+(<*>)    :: f (x -> y) -> f x -> f y
+         :: f          -> f   -> f     -- erased
+flip (:) :: [a]        -> a   -> [a]
+(++)     :: [a]        -> [a] -> [a]
 ```
 
 For another warm-up example, `fmap`, which acts on the
@@ -833,13 +837,19 @@ the [*kan-extensions*][kan] library as:
 
 ```haskell
 newtype Curry f g a = Curry (forall r. f (a -> r) -> g r)
+newtype Yoneda f a = Yoneda (forall r. (a -> r) -> f r)
 ```
 
-This is relevant to understand the theoretical connection between
+`Curry` is particularly relevant to understand the theoretical connection between
 applicative difference lists and plain difference lists `[a] -> [a]`
 via Cayley's theorem:
 
-> A monoid `m` is a submonoid of `Endo m = (m -> m)`.
+<blockquote>
+A monoid `m` is a submonoid of `Endo m = (m -> m)`:
+there is an injective monoid morphism `liftEndo :: m -> Endo m`.
+</blockquote>
+
+(More precisely, `lift = (<>)`.)
 
 `Endo m` corresponds to difference lists if we take the list monoid `m = [a]`.
 
@@ -850,9 +860,16 @@ the definition of `Endo` to an *exponential object* `Endo m = Exp(m, m)`.
 As it turns out, applicative functors are monoid objects, and the notion of
 exponential is given by `Curry` above.
 
-However if we then naively define `Endo f = Curry f f`, that is different from
-`ApDList` (missing a `Yoneda`), and it is not what we want here. The
-instance `Applicative (Endo f)` inserts an undesirable application of
+<blockquote>
+An applicative functor `f` is a substructure of `Endo f = Curry f f`:
+there is an injective transformation `liftEndo :: f a -> Endo f a`.
+</blockquote>
+
+("Sub-applicative-functor" is a mouthful.)
+
+However if we take that naive definition `Endo f = Curry f f`, that is
+different from `ApDList` (missing a `Yoneda`), and it is not what we want here.
+The instance `Applicative (Endo f)` inserts an undesirable application of
 `(<$>)` in its definition of `pure`.
 
 The mismatch is due to the fact that the syntactic concerns discussed here
@@ -866,8 +883,8 @@ should work fine as an alternative definition of `ApDList f`.
 Cayley's theorem also applies to monads, so these three things
 are, in a sense, the same:
 
-- Difference lists
-- Applicative difference lists
+- Difference lists (`Endo` monoid)
+- Applicative difference lists (`ApDList` applicative functor)
 - Continuation transformers (continuation/codensity monad)
 
 For more details about that connection, read the paper
