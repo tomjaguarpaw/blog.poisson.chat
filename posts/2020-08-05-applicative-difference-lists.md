@@ -232,13 +232,12 @@ To echo the three points just above:
 2. Properly measuring the subtle difference between pairs and closures sounds
    like a pain. Knowing that the code that eventually runs allows one to switch
    from one system (`DeriveTraversable`) to another (*generic-data*) without
-   risk of regressions.[^caveat]
+   risk of regressions---modulo all the transient caveats that make this ideal
+   story not true today.
 
 3. If actions must be associated another way, this is just another library
    function to be written.
 
-[^caveat]: Modulo all the transient caveats that make this ideal story not true
-  today.
 
 = Streamlining traversals with difference lists
 
@@ -259,7 +258,7 @@ data Free f a where
 ```
 
 However, this is a recursive structure: that blocks compiler optimizations
-because GHC does not inline recursive functions (if they were,
+because GHC does not inline recursive functions (if it did,
 this could be a viable approach).
 
 Notice that this free applicative functor is basically a list,
@@ -485,9 +484,9 @@ ApDList uf <*> ApDList ux = ApDList (\t -> ux (Yoneda (\c -> uf (fmap (\d e -> c
 
 Remark: this composition operator is actually flipped.
 The standard definition goes `uf . ux = (\t -> uf (ux t))`.
-This is fine here because applicative lists are actually snoc lists,[^snoc]
-where elements are added to the right of lists, so the "holes" of the corresponding
-difference lists are on the left:
+This is fine here because applicative lists are actually snoc lists---the
+reverse of "cons"---where elements are added to the right of lists, so the
+"holes" of the corresponding difference lists are on the left:
 
 ```haskell
 uf = ((_ <*> a) <*> b) <*> c)  -- A snoc list, separated by (<*>)
@@ -495,8 +494,6 @@ ux = (_ <*> x) <*> y
 
 uf <*> ux = ((((_ <*> a) <*> b) <*> c) <*> x) <*> y
 ```
-
-[^snoc]: The word "snoc" is the reverse of "cons".
 
 To concatenate `uf` and `ux`, we put `uf` in the hole on the left end of `ux`,
 rather than the other way around; this is why, in the definition above,
