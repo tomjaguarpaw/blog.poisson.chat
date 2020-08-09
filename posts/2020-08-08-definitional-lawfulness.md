@@ -123,7 +123,7 @@ Template Haskell is the other obvious candidate, but it is not as convenient:
 
 = Associativity
 
-The inspection tests pass for almost all of the monads mentioned above.
+The inspection tests pass for almost all of the monads under test.
 Three tests fail. One (`Writer`) could be fixed with a little tweak.
 The other two (`Select` and `Product`) can probably be fixed, I'm not sure.
 
@@ -157,7 +157,7 @@ which GHC cannot reassociate in general.
   is an unfortunately visible difference, which is why the source code
   uses `mappend`.
 
-A simple fix is to instantiate the monoid `w` to a concrete one
+A simple fix is to instantiate the monoid `log` to a concrete one
 whose operations do get reassociated, such as `Endo e`.
 While that makes the test less general technically, it can also be
 argued that this is such a localized change that we should still be able to
