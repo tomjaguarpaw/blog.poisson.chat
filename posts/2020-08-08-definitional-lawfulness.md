@@ -3,7 +3,9 @@ title: "Definitional lawfulness: proof by inspection testing"
 keywords: [haskell, testing]
 ---
 
-Can we prove `Monad` instances lawful using *inspection-testing*?
+Can we prove `Monad` instances lawful using [*inspection-testing*][inspection]?
+
+[inspection]: https://hackage.haskell.org/package/inspection-testing
 
 In this very simple experiment, I've tried to make it work for the common
 monads found in *base* and *transformers*.
