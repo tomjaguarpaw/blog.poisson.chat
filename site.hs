@@ -174,18 +174,28 @@ main = do
             >>= loadAndApplyTemplate "templates/default.html" indexCtx
             >>= relativizeUrls
 
-    create ["rss.xml"] $ do
-      route idRoute
-      compile $ do
-        posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" bodySnapshot
-        let feedCtx =
-              postCtx `mappend`
-              -- Add full body to RSS
-              field "description" (\post -> return (itemBody post))
-        rssTemplate <- loadBody "templates/rss.xml"
-        rssItemTemplate <- loadBody "templates/rss-item.xml"
-        renderRssWithTemplates rssTemplate rssItemTemplate
-          myFeedConfiguration feedCtx posts
+    createFeed Rss
+    createFeed Atom
+
+data Feed = Atom | Rss
+
+createFeed :: Feed -> Rules ()
+createFeed feed =
+  let (target, templatePath, itemTemplatePath, renderWithTemplates) = case feed of
+        Atom -> ("atom.xml", "templates/atom.xml", "templates/atom-item.xml", renderAtomWithTemplates)
+        Rss  -> ("rss.xml",  "templates/rss.xml",  "templates/rss-item.xml",  renderRssWithTemplates)
+  in create [target] $ do
+    route idRoute
+    compile $ do
+      posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" bodySnapshot
+      let feedCtx =
+            postCtx `mappend`
+            -- Add full body to RSS
+            field "description" (\post -> return (itemBody post))
+      rssTemplate <- loadBody templatePath
+      rssItemTemplate <- loadBody itemTemplatePath
+      renderWithTemplates rssTemplate rssItemTemplate
+        myFeedConfiguration feedCtx posts
 
 bodySnapshot :: Snapshot
 bodySnapshot = "post-body"
