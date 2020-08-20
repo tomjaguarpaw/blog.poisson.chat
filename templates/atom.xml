@@ -3,7 +3,7 @@
     <title>$title$</title>
     <link href="$root$$url$" rel="self" />
     <link href="$root$" />
-    <icon>$root$/favicon.ico</icon>
+    <icon>$root$/favicon.png</icon>
     <id>$root$$url$</id>
     <author>
         <name>$authorName$</name>

@@ -79,8 +79,8 @@ main = do
   let ?writerOpts = writerOpts
 
   hakyll $ do
-    match "data/favicon.ico" $ do
-        route   (constRoute "favicon.ico")
+    match "data/favicon.png" $ do
+        route   (constRoute "favicon.png")
         compile copyFileCompiler
 
     match "images/*" $ do
