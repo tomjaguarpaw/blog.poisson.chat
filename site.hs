@@ -182,7 +182,10 @@ main = do
               postCtx `mappend`
               -- Add full body to RSS
               field "description" (\post -> return (itemBody post))
-        renderRss myFeedConfiguration feedCtx posts
+        rssTemplate <- loadBody "templates/rss.xml"
+        rssItemTemplate <- loadBody "templates/rss-item.xml"
+        renderRssWithTemplates rssTemplate rssItemTemplate
+          myFeedConfiguration feedCtx posts
 
 bodySnapshot :: Snapshot
 bodySnapshot = "post-body"
