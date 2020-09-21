@@ -28,6 +28,8 @@ import Text.Megaparsec (Parsec, parse, anySingle, chunk, eof, errorBundlePretty,
 import Hakyll hiding (defaultContext)
 import qualified Hakyll
 
+import Alectryon (onCoqBlocks, tryAlectryon)
+
 topics :: [(String, String)]
 topics =
   [ ("haskell", "The Haskell language")
@@ -205,7 +207,7 @@ bodySnapshot = "post-body"
 -- True if the post contains Coq code.
 myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String, Bool)
 myPandocCompiler = do
-  doc <- readPandocWith ?readerOpts =<< getResourceBody
+  doc <- tryAlectryon =<< readPandocWith ?readerOpts =<< getResourceBody
   -- Filters are very slow, so we only apply them to blogposts containing Coq.
   let hasCoq = getAny (query isCoqBlock doc)
       filterCoq = if hasCoq then runFilter else pure
@@ -215,8 +217,7 @@ myPandocCompiler = do
   where
     runFilter = unsafeRun . applyFilters ?readerOpts [JSONFilter "./coqfilter.py"] ["html"]
     unsafeRun = Hakyll.unsafeCompiler . runIOorExplode
-    isCoqBlock (CodeBlock (_, cs, _) _) = Any ("coq" `elem` cs)
-    isCoqBlock _ = Any False
+    isCoqBlock = Any . onCoqBlocks False (\_ -> True)
 
 postCtx :: Context String
 postCtx =
