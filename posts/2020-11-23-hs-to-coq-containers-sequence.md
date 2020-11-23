@@ -317,7 +317,7 @@ the abbreviation on the fly whenever it encounters an identifier, and after the
 parser is done, the abbreviation is completely forgotten.
 
 ```
-module alias Data.Sequence.Internal Seq
+module alias Seq Data.Sequence.Internal
 # "Seq" is now an abbreviation of "Data.Sequence.Internal"
 ```
 
