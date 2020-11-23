@@ -204,7 +204,6 @@ bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
 
--- True if the post contains Coq code.
 myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String, Bool)
 myPandocCompiler = do
   doc <- tryAlectryon =<< readPandocWith ?readerOpts =<< getResourceBody
