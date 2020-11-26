@@ -197,7 +197,7 @@ map f [] = []
 map f (x : xs) = f x : map f xs
 ```
 
-*hs-to-coq* allows specifying the decreasing argument by its position in the
+*hs-to-coq* now allows specifying the decreasing argument by its position in the
 Haskell definition, i.e., ignoring type parameters.
 To implement that feature, we have to be a little careful since type parameters
 in Coq are parameters like any other, so they shift the positions of arguments.
@@ -210,7 +210,7 @@ termination f {struct 2}
 # The second argument of f is decreasing
 ```
 
-Another solution is to fix the name generation to be more predictable.
+Another potential solution is to fix the name generation to be more predictable.
 The arguments of top-level functions are numbered sequentially `arg_1__`,
 `arg_2__`, etc., which may be fine, but local functions just keep counting from
 wherever that left off (going up to `arg_38__` in one case). Maybe they should
