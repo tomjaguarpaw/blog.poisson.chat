@@ -28,7 +28,7 @@ import Text.Megaparsec (Parsec, parse, anySingle, chunk, eof, errorBundlePretty,
 import Hakyll hiding (defaultContext)
 import qualified Hakyll
 
-import Alectryon (onCoqBlocks, tryAlectryon)
+import qualified Hakyll.Alectryon as Alectryon
 
 topics :: [(String, String)]
 topics =
@@ -206,17 +206,13 @@ bodySnapshot = "post-body"
 
 myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String, Bool)
 myPandocCompiler = do
-  doc <- tryAlectryon =<< readPandocWith ?readerOpts =<< getResourceBody
-  -- Filters are very slow, so we only apply them to blogposts containing Coq.
+  doc <- readPandocWith ?readerOpts =<< getResourceBody
+  doc2 <- Alectryon.tryTransform_ (fmap (headerShift 1) doc)
   let hasCoq = getAny (query isCoqBlock doc)
-      filterCoq = if hasCoq then runFilter else pure
-  doc1 <- traverse (filterCoq . headerShift 1) doc
-  let doc2 = writePandocWith ?writerOpts doc1
-  pure (doc2, hasCoq)
+  pure (writePandocWith ?writerOpts doc2, hasCoq)
   where
-    runFilter = unsafeRun . applyFilters ?readerOpts [JSONFilter "./coqfilter.py"] ["html"]
-    unsafeRun = Hakyll.unsafeCompiler . runIOorExplode
-    isCoqBlock = Any . onCoqBlocks False (\_ -> True)
+    isCoqBlock b = Any (Alectryon.onCoqBlocks       False (\_ -> True) b
+                     || Alectryon.onAlectryonBlocks False (\_ -> True) b)
 
 postCtx :: Context String
 postCtx =

@@ -17,6 +17,7 @@ executable lysxia
   default-language:    Haskell2010
   ghc-options:         -threaded
   build-depends:
+    hakyll-alectryon >= 0.1.1,
     hakyll >= 4,
     pandoc >= 2.0,
     pandoc-types,
