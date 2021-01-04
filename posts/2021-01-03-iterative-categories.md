@@ -8,13 +8,13 @@ A common way to elaborate that idea is to express one in terms of the other.
 Iteration, recursively: to iterate an action, is to do the action, and then
 iterate the action again.
 Conversely, a recursive definition can be approximated by unfolding it
-iteratively. Implemented on a sequential machine, we can use a stack to keep
-track of those unfoldings.
+iteratively. To implement recursion on a sequential machine, we can use a stack
+to keep track of those unfoldings.
 
 So there is a sense in which these are equivalent, but that already presumes
 that they are not exactly the same. We think about recursion differently than
 iteration. Hence it may a little surprising when recursion and iteration both
-directly be seen as two implementations of the same interface.
+appear directly as two implementations of the same interface.
 
 To summarize the main point without all the upcoming category theory jargon,
 there is one signature which describes an operator for iteration, recursion, or
@@ -194,14 +194,14 @@ One intuition for that category is that functors `f` are *interfaces*,
 and the free monad `Free f` is inhabited by expressions, or *programs*, using
 operations from the interface `f`.
 Then a natural transformation `f ~> Free g` is an *implementation* of the
-interface `f` using interface `g`. Those operations compose naturally,
+interface `f` using interface `g`. Those operations compose naturally:
 given an implementation of `f` in terms of `g` (`f ~> Free g`),
 and an implementation of `g` in terms of `h` (`g ~> Free h`),
 we can obtain an implementation of `f` in terms of `h` (`f ~> Free h`).
-Thus arrows `_ ~> Free _` form a category (and that also mostly implies that
-`Free` is a monad).
+Thus arrows `_ ~> Free _` form a category---and that also mostly implies that
+`Free` is a monad.
 
-We can define `iter` in that category. Like previous examples, can define it
+We can define `iter` in that category. Like previous examples, we can define it
 without thinking by using the fixed point equation of `iter`.
 We will call `rec` this variant of `iter`, because it actually behaves a lot
 like `fix` whose name is already taken:
@@ -224,9 +224,8 @@ interface `f`: it uses an interface `f :+: g` which includes `f` itself.
 `rec f` composes `f` with `either (rec f) id`, which is basically some
 plumbing around `rec f`.
 Consequently, `rec` takes a recursive program `prog :: f ~> Free (f :+: g)`, and
-produces a non-recursive program `f ~> Free g`, using the argument `prog` to
-implement its recursive calls, so we are left with the other "external" calls
-in `g`.
+produces a non-recursive program `f ~> Free g`, using that same result to implement
+the `f` calls in `prog`, so only the other "external" calls in `g` remain.
 
 That third version of `iter` (`rec`) has similarities to both of the previous versions
 (`iter` and `fix`).
