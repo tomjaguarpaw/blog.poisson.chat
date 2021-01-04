@@ -58,9 +58,11 @@ equation:[^laws]
 iter f = (f >>> either (iter f) id)
 ```
 
-where `(>>>)` and `id` are the two defining components of a category,
+where `(>>>)` and `id` are the two defining components of a [category][category],
 and `either` is the eliminator for sums (`+`).
 The technical term for "a category with sums" is a cocartesian category.
+
+[category]: https://hackage.haskell.org/package/base-4.14.1.0/docs/Control-Category.html#t:Category
 
 [^laws]: The notion of "iterative category" is not quite standard;
 [here is my version in Coq][itree] which condenses the little I could digest
@@ -81,8 +83,15 @@ For an additional source of diagrams and literature, a related notion is that of
 [tmc]: https://en.wikipedia.org/wiki/Traced_monoidal_category
 [itree]: https://github.com/DeepSpec/InteractionTrees/blob/master/theories/Basics/CategoryTheory.v#L485-L506
 
-```
-either :: (a ==> c) -> (b ==> c) -> (a + b ==> c)
+```haskell
+class Category k => Cocartesian k where
+  type a + b    -- Not fully well-formed Haskell.
+  either :: k a c -> k b c -> k (a + b) c
+  left :: k a (a + b)
+  right :: k b (a + b)
+
+-- Replacing k with an infix (==>)
+-- either :: (a ==> c) -> (b ==> c) -> (a + b ==> c)
 ```
 
 Putting this all together, an *iterative category* is a cocartesian category
