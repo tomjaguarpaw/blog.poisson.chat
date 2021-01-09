@@ -130,7 +130,6 @@ ul code, p code, span.dt {
 }
 
 ul code, p code {
-  display: inline-block;
   margin: 0 0.2em;
 }
 
