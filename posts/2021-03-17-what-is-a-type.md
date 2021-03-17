@@ -35,7 +35,7 @@ a black box.
 [^sound]: Whereas most formal methods are sound for proving the absence
 of certain bugs, testing is a sound method of finding bugs.
 
-But approaches using "types" seem different. To prove a specification, a typing
+Approaches using "types" seem different. To prove a specification, a typing
 judgement "`t : T`", the way forward is to prove more typing judgements by
 following the rules of some "type system". Types tell me both "how to specify
 things" and "how to verify things"---by specifying and verifying sub-things.
