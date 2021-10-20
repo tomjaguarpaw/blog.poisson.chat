@@ -201,3 +201,7 @@ details {
 .nobr {
     white-space: nowrap;
 }
+
+.alectryon-io {
+  white-space: pre;
+}

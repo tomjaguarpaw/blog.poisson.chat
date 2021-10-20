@@ -80,7 +80,7 @@ main = do
   let ?readerOpts = readerOpts
   let ?writerOpts = writerOpts
 
-  hakyll $ do
+  Alectryon.hakyll $ \opts -> do
     match "data/favicon.png" $ do
         route   (constRoute "favicon.png")
         compile copyFileCompiler
@@ -106,7 +106,7 @@ main = do
     match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
         compile $ do
-          (doc, hasCoq) <- myPandocCompiler
+          (doc, hasCoq) <- myPandocCompiler opts
           pure doc
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= saveSnapshot bodySnapshot
@@ -204,10 +204,10 @@ bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
 
-myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Compiler (Item String, Bool)
-myPandocCompiler = do
+myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Alectryon.Options -> Compiler (Item String, Bool)
+myPandocCompiler opts = do
   doc <- readPandocWith ?readerOpts =<< getResourceBody
-  doc2 <- Alectryon.tryTransform_ (fmap (headerShift 1) doc)
+  doc2 <- Alectryon.tryTransform opts (fmap (headerShift 1) doc)
   let hasCoq = getAny (query isCoqBlock doc)
   pure (writePandocWith ?writerOpts doc2, hasCoq)
   where
