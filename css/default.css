@@ -6,7 +6,7 @@ body {
     font-family: "Calibri", sans-serif;
 }
 
-pre, code {
+pre, code, pre.alectryon-io {
   font-family: "Lucida Sans Typewriter", monospace;
 }
 
