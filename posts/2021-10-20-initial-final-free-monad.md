@@ -679,7 +679,7 @@ We inherit the `LawfulMonad` laws from before.
 The relations `RMonad` and `RMonadFree`,
 defined earlier, must relate `m`'s instances of `Monad` and `MonadFree`,
 for the artificial reason that that's roughly what `RFree'` will require.
-We also add a generalize transitivity law, which allows us to rewrite
+We also add a generalized transitivity law, which allows us to rewrite
 either side of a heterogeneous relation `propeq1 r` using the homogeneous
 one `=` (which denotes `propeq1 eq`).
 
@@ -836,7 +836,7 @@ around claims made "by parametricity".
 
 - [Church encodings, inductive types, and relational parametricity](https://semantic-domain.blogspot.com/2020/12/church-encodings-are-inductive-types.html), by Neel Krishnaswami
 
-- [Final algebra semantics is observational eqquivalence](https://prl.ccs.neu.edu/blog/2017/09/27/final-algebra-semantics-is-observational-equivalence/), by Max New
+- [Final algebra semantics is observational equivalence](https://prl.ccs.neu.edu/blog/2017/09/27/final-algebra-semantics-is-observational-equivalence/), by Max New
 
 - [Relational parametricity for higher kinds](https://bentnib.org/fomega-parametricity.pdf) (PDF), by Robert Atkey
 
