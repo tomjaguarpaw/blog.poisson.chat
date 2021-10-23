@@ -840,6 +840,8 @@ around claims made "by parametricity".
 
 - [Relational parametricity for higher kinds](https://bentnib.org/fomega-parametricity.pdf) (PDF), by Robert Atkey
 
+- [Free theorems involving type constructor classes](https://www.janis-voigtlaender.eu/papers.html#Voi09b) (PDF), by Janis Voigtländer
+
 - [Parametricity, type equality and higher-order polymorphism](https://www.cis.upenn.edu/~sweirich/papers/gparam-jfp2.pdf) (PDF), by Dimitrios Vytiniotis and Stephanie Weirich
 
 - [Unary parametricity vs binary parametricity](https://cstheory.stackexchange.com/questions/11541/unary-parametricity-vs-binary-parametricity/11637), on TCS StackExchange
