@@ -7,7 +7,7 @@ alectryon-cache: "posts/2021-10-26"
 
 It's obvious what an infinite list is. But when formalizing things,
 we must be picky about definitions to not get tangled up in a messy
-web of definitions.
+web of concepts.
 This post will present some ways of saying that "a list is infinite"
 formally in Coq.[^ziplist]
 
