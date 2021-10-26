@@ -105,13 +105,7 @@ main = do
 
     match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
         route $ setExtension "html"
-        compile $ do
-          (doc, hasCoq) <- myPandocCompiler opts
-          pure doc
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= saveSnapshot bodySnapshot
-            >>= loadAndApplyTemplate "templates/default.html" (boolField "coqstyle" (\_ -> hasCoq) `mappend` postCtx)
-            >>= relativizeUrls
+        compile $ myPandocCompiler opts
 
     {-
     create ["archive.html"] $ do
@@ -204,12 +198,18 @@ bodySnapshot = "post-body"
 
 --------------------------------------------------------------------------------
 
-myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Alectryon.Options -> Compiler (Item String, Bool)
+myPandocCompiler :: (?readerOpts :: ReaderOptions, ?writerOpts :: WriterOptions) => Alectryon.Options -> Compiler (Item String)
 myPandocCompiler opts = do
-  doc <- readPandocWith ?readerOpts =<< getResourceBody
-  doc2 <- Alectryon.tryTransform opts (fmap (headerShift 1) doc)
+  doc0 <- readPandocWith ?readerOpts =<< getResourceBody
+  let doc = fmap (headerShift 1) doc0
   let hasCoq = getAny (query isCoqBlock doc)
-  pure (writePandocWith ?writerOpts doc2, hasCoq)
+  -- Save snapshot without alectryon processing
+  _ <- saveSnapshot bodySnapshot (writePandocWith ?writerOpts doc)
+  doc2 <- Alectryon.tryTransform opts doc
+  pure (writePandocWith ?writerOpts doc2)
+    >>= loadAndApplyTemplate "templates/post.html"    postCtx
+    >>= loadAndApplyTemplate "templates/default.html" (boolField "coqstyle" (\_ -> hasCoq) `mappend` postCtx)
+    >>= relativizeUrls
   where
     isCoqBlock b = Any (Alectryon.onCoqBlocks       False (\_ -> True) b
                      || Alectryon.onAlectryonBlocks False (\_ -> True) b)
