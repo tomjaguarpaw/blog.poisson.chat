@@ -399,7 +399,8 @@ we will write it in infix notation as `==` in the rest of the post.
 [^prev]: See also [my previous post](./2021-10-20-initial-final-free-monad.html#types-as-relations).
 
 ```alectryon
-Inductive RColistF {a b} (r : a -> b -> Prop) xa xb (rx : xa -> xb -> Prop) : ColistF a xa -> ColistF b xb -> Prop :=
+Inductive RColistF {a b} (r : a -> b -> Prop) xa xb (rx : xa -> xb -> Prop)
+  : ColistF a xa -> ColistF b xb -> Prop :=
 | RNil : RColistF r rx [] []
 | RCons x xs y ys : r x y -> rx xs ys -> RColistF r rx (Cons x xs) (Cons y ys)
 .
@@ -494,7 +495,8 @@ a proof of `Neverending xs`, since `index` requires that argument, and `xs`
 can be deduced from `NE`'s type.
 
 ```alectryon
-Lemma Neverending_Enumerable_ {a} (xs : Colist a) (NE : Neverending xs) (f : nat -> a) (n : nat)
+Lemma Neverending_Enumerable_ {a} (xs : Colist a) (NE : Neverending xs)
+    (f : nat -> a) (n : nat)
   : (forall i, f (n+i) = index NE i) ->
     xs == map f (nats_from n).
 Proof.
