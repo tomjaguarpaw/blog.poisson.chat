@@ -193,6 +193,20 @@ details {
   margin-bottom: 1em;
 }
 
+.exercise {
+  background-color: #EEEEEE;
+  padding: 1em;
+  margin-bottom: 16px;
+}
+
+.exercise > :first-child {
+  margin-top: 0;
+}
+
+.exercise > :last-child {
+  margin-bottom: 0;
+}
+
 /* Highlight footnote when accessed via a link. */
 .footnotes :target {
   background-color: #E2E2E2;
