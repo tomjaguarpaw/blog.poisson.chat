@@ -4,7 +4,7 @@ keywords: [coq, theory]
 alectryon: []
 ---
 
-[snippet]: https://bitbucket.org/lyxia/blog.poisson.chat/src/master/snippets/Heads.v
+[snippet]: https://bitbucket.org/lyxia/blog.poisson.chat/src/master/snippets/ProperFacts.v
 
 A convenient proof tactic is [to `rewrite` expressions using a relation other
 than equality][rewriting]. Some setup is required to ensure that such a proof step is allowed.
@@ -318,8 +318,8 @@ domain's relation `RD`, provided that `f` itself is surrounded by a context
 that allows rewriting along the codomain's relation `RC`.
 In a proof, the goal may be some proposition in which `f x` occurs, `P (f x)`,
 then we may `rewrite` that goal into `P (f y)` using an assumption `RD x y`,
-provided that `f : RD ==> RC` and `P : RC ==> iff`, where `iff` is logical
-equivalence, with the infix notation `<->`.
+provided that `Proper (RD ==> RC) f` and `Proper (RC ==> iff) P`,
+where `iff` is logical equivalence, with the infix notation `<->`.
 
 ```coq
 Definition iff (P Q : Prop) : Prop := (P -> Q) /\ (Q -> P).
