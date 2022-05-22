@@ -7,7 +7,7 @@ body {
 }
 
 pre, code, pre.alectryon-io {
-  font-family: "Lucida Sans Typewriter", monospace;
+  font-family: "Fira Code", "Lucida Sans Typewriter", monospace;
 }
 
 @media only screen and (max-width: 768px) {
