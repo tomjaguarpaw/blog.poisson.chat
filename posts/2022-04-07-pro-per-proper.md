@@ -2,6 +2,7 @@
 title: The pro-PER meaning of "proper"
 keywords: [coq, theory]
 alectryon: []
+alectryon-cache: "posts/2022-04-07/"
 ---
 
 [snippet]: https://bitbucket.org/lyxia/blog.poisson.chat/src/master/snippets/ProperFacts.v
