@@ -19,7 +19,7 @@ to be able to define the set of things we want to count. It turns out that
 there are at least two ways of encoding sets in type theory: sets as
 types, and sets as predicates. They are suitable for defining different classes
 of operations: sums (disjoint union) are a natural operation on types, while
-unions and intersections are a naturally defined on predicates.
+unions and intersections are naturally defined on predicates.
 
 [^bijou]: The code from this post is part of this project I've started
   [here][bijou]. Also check out Brent Yorgey's thesis:
