@@ -4,6 +4,7 @@ body {
     margin: 0 auto 0 auto;
     width: 600px;
     font-family: "Calibri", sans-serif;
+    font-size: 18px;
 }
 
 pre, code, pre.alectryon-io {
