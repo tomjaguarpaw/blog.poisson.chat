@@ -185,7 +185,7 @@ sup {
   font-size: 0.8em;
 }
 
-.code-details > summary {
+details > summary {
   color: #AAAAAA;
 }
 
