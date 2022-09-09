@@ -25,6 +25,7 @@
     <item>then</item>
     <item>type</item>
     <item>where</item>
+    <item>instanceDict</item> <!-- from FCI -->
   </list>
   <!--
   <list name="prelude function">

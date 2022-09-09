@@ -4,6 +4,7 @@
     OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
+import Data.Char (isAlpha)
 import Data.Foldable (for_)
 import Data.Functor (($>))
 import Data.Monoid (Any(..), mappend)
@@ -23,7 +24,7 @@ import Text.Pandoc.Options
   )
 import Text.Pandoc.Walk (query)
 
-import Text.Megaparsec (Parsec, parse, anySingle, chunk, eof, errorBundlePretty, (<|>))
+import Text.Megaparsec (Parsec, parse, anySingle, single, takeWhileP, eof, errorBundlePretty, optional, (<|>))
 
 import Hakyll hiding (defaultContext)
 import qualified Hakyll
@@ -225,11 +226,12 @@ simplTitle s =
     Left e -> error (errorBundlePretty e)
     Right t -> t
 
--- Drop <code> and </code> tags
+-- Drop tags (<a> and </a>)
 titleParser :: Parsec Void String String
 titleParser =
-  ((chunk "<code>" <|> chunk "</code>") $> id <|> (:) <$> anySingle) <*> titleParser <|>
-  eof $> []
+  (   single '<' *> optional (single '/') *> takeWhileP Nothing isAlpha *> single '>' $> id
+  <|> (:) <$> anySingle
+  ) <*> titleParser <|> eof $> []
 
 defaultContext :: Context String
 defaultContext =
