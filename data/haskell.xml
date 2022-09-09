@@ -477,8 +477,10 @@
 
       <RegExpr attribute="Special"          context="#stay" String="(::|=&gt;|\-&gt;|&lt;\-|=|\[\||\|\])(?![\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:])" />
       <AnyChar attribute="Special"          context="#stay" String="∷⇒→←∀∃" />
+      <!--
       <RegExpr attribute="Signature"        context="#stay" String="^\s*[a-z_][a-zA-Z0-9_']*\s*(?=::([^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:]|$))" />
       <RegExpr attribute="Signature"        context="#stay" String="^\s*(\([\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:]*\))*\s*(?=::[^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:])" />
+      -->
       <RegExpr attribute="Function"         context="#stay" String="([A-Z][a-zA-Z0-9_']*\.)*[a-z_][a-zA-Z0-9_']*" />
       <RegExpr attribute="Operator"         context="#stay" String="([A-Z][a-zA-Z0-0_']*\.)*[\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:]+" />
       <RegExpr attribute="Type"             context="#stay" String="([A-Z][a-zA-Z0-9_']*\.)*[A-Z][a-zA-Z0-9_']*" />
