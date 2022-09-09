@@ -475,7 +475,7 @@
       <keyword attribute="Class Prelude"    context="#stay" String="prelude class" />
       -->
 
-      <RegExpr attribute="Special"          context="#stay" String="(::|=&gt;|\-&gt;|&lt;\-|=)(?![\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:])" />
+      <RegExpr attribute="Special"          context="#stay" String="(::|=&gt;|\-&gt;|&lt;\-|=|\[\||\|\])(?![\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:])" />
       <AnyChar attribute="Special"          context="#stay" String="∷⇒→←∀∃" />
       <RegExpr attribute="Signature"        context="#stay" String="^\s*[a-z_][a-zA-Z0-9_']*\s*(?=::([^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:]|$))" />
       <RegExpr attribute="Signature"        context="#stay" String="^\s*(\([\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:]*\))*\s*(?=::[^\-!#\$%&amp;\*\+/&lt;=&gt;\?&#92;@\^\|~\.:])" />
