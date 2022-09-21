@@ -172,7 +172,7 @@ Et voilà.
 
 ---
 
-= Appendix: Couldn't we do this?
+= Appendix: Couldn't we do this instead?
 
 If you've followed all of that, there's one other way you might try defining
 `gfmap` without `QuantifiedConstraints`, by just listing the three constraints
@@ -278,9 +278,9 @@ gsolomap ((+1) :: Int -> Int) (C 0 0 0) == C 1 1 1 :: T Int Int  -- Noooooo...
 
 This is why `gfmap`'s signature should use quantified constraints:
 this guarantees that when the `RepFmap` constraint is solved,
-the first four parameters are going to be *distinct type variables*,
-thanks to the separate quantifications (`forall a a' b b'`).
-Thus, incoherence is completely hidden.
+the first two parameters are going to be *distinct type variables*,
+thanks to the universal quantification (`forall a a'`).
+Thus, incoherence is hidden away.
 
 Following that recipe, *generic-functor* contains *safe* implementations of
 `Functor`, `Foldable`, `Traversable`, `Bifunctor`, and `Bitraversable`.
