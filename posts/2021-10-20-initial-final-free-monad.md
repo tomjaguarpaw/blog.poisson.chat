@@ -258,11 +258,13 @@ Fixpoint bindFree {f a b} (u : Free f a) (k : a -> Free f b) : Free f b :=
   | Bind e h => Bind e (fun x => bindFree (h x) k)
   end.
 
+#[global]
 Instance Monad_Free f : Monad (Free f) :=
   {| pure := @Pure f
   ;  bind := @bindFree f
   |}.
 
+#[global]
 Instance MonadFree_Free f : MonadFree f (Free f) :=
   {| free A e := Bind e (fun a => Pure a)
   |}.
@@ -643,6 +645,7 @@ Given a `PropEq1 m` instance, we can apply it to the relation `eq`
 to get a plain relation which seems a decent enough default for `PropEq (m a)`.
 
 ```alectryon
+#[global]
 Instance PropEq_PropEq1 {m} `{PropEq1 m} {a} : PropEq (m a) := propeq1 eq.
 ```
 
@@ -698,6 +701,7 @@ for our purposes, which is to prove the `from_to` theorem below, validating the
 isomorphism between `Free` and `Free'`.
 
 ```alectryon
+#[global]
 Instance eq_Free' f `(PropEq1 f) a : PropEq (Free' f a) :=
   fun u₁ u₂ =>
     forall m `(MonadFree f m) `(PropEq1 m) `(!ReallyLawfulMonadFree (m := m)),
@@ -717,7 +721,7 @@ Lemma foldFree_bindFree {f m} `{MonadFree f m} `{forall a, PropEq (m a)} `{!Lawf
   : foldFree (bindFree u k) = bind (foldFree u) (fun x => foldFree (k x)).
 Proof.
   induction u; cbn [bindFree foldFree].
-  - symmetry. apply pure_bind with (k0 := fun x => foldFree (k x)).
+  - symmetry. apply pure_bind with (k := fun x => foldFree (k x)).
   - etransitivity; [ | symmetry; apply bind_bind ].
     eapply propeq_bind.
     * reflexivity.

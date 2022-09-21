@@ -15,6 +15,7 @@ in our library. For example, a theorem like
 [rewriting]: https://coq.inria.fr/distrib/current/refman/addendum/generalized-rewriting.html
 
 ```coq
+#[global]
 Instance Proper_f : Proper ((==) ==> (==)) f.
 ```
 
@@ -380,6 +381,7 @@ and/or `N` depend on `z` so the universal quantification is necessary to bind
 after having proved a `Proper` theorem featuring `pointwise_relation`:
 
 ```coq
+#[global]
 Instance Proper_f : Proper (pointwise_relation RF ==> RD) f.
 ```
 
@@ -401,6 +403,7 @@ Theorem not_Proper_compose :
 Instead, at least the first domain of `compose` should be quotiented by `RD ==> RC` instead:
 
 ```coq
+#[global]
 Instance Proper_compose {E D C}
     (RD : D -> D -> Prop) (RC : C -> C -> Prop) :
     Proper ((RD ==> RC) ==> pr RD ==> pr RC)
@@ -410,6 +413,7 @@ Instance Proper_compose {E D C}
 We can even use `==>` everywhere for a nicer-looking theorem:
 
 ```coq
+#[global]
 Instance Proper_compose' {E D C} (RE : E -> E -> Prop)
     (RD : D -> D -> Prop) (RC : C -> C -> Prop) :
     Proper ((RD ==> RC) ==> (RE ==> RD) ==> (RE ==> RC))

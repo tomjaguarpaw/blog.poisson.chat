@@ -524,7 +524,7 @@ Theorem Neverending_Enumerable_by {a} (xs : Colist a) (NE : Neverending xs)
   : Enumerable_by (index NE) xs.
 Proof.
   unfold Enumerable_by, nats.
-  apply Neverending_Enumerable_ with (NE0 := NE) (n := 0).
+  apply Neverending_Enumerable_ with (NE := NE) (n := 0).
   reflexivity.
 Qed.
 ```
@@ -537,7 +537,7 @@ enumerability".
 Corollary Neverending_Enumerable {a} (xs : Colist a)
   : Neverending xs -> Enumerable xs.
 Proof.
-  intros NE; eexists; apply Neverending_Enumerable_by with (NE0 := NE).
+  intros NE; eexists; apply (Neverending_Enumerable_by (NE := NE)).
 Qed.
 ```
 
