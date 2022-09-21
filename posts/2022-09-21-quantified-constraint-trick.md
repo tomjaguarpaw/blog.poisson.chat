@@ -156,7 +156,7 @@ generic representation (`Rep`) implements `RepFmap a a'`...
 for all `a`, `a'`.
 
 ```haskell
--- Constraint synonym for generically derivable functors
+-- Class synonym for generically derivable functors
 class    (forall a. Generic (f a), forall a a'. RepFmap a a' (Rep (f a) ()) (Rep (f a') ())) => GFunctor f
 instance ...   -- idem (class synonym)
 
@@ -167,7 +167,7 @@ But that is illegal, because the type family `Rep` occurs in the conclusion of
 a quantified constraint. Time for the trick! We give a new name to the conclusion:
 
 ```haskell
-class    RepFmap a a' (Rep (f a)) (Rep (f a')) => RepFmapRep a a' f
+class    RepFmap a a' (Rep (f a) ()) (Rep (f a') ()) => RepFmapRep a a' f
 instance ...  -- idem (class synonym)
 ```
 
@@ -190,7 +190,7 @@ gfmap f =
 
 Et voilà.
 
-[(Gist of this example)](https://gist.github.com/Lysxia/b1708d00f2ea766a270ad28c182bfd2f)
+[(Gist of this example)](https://gist.github.com/Lysxia/7714c19ef9c17b487a46c804694fc0f9)
 
 ---
 
