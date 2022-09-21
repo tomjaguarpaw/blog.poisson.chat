@@ -1,5 +1,6 @@
 ---
 title: The quantified constraint trick
+keywords: ["haskell", "haskell-tricks", "libraries"]
 ---
 
 My favorite Haskell trick is how to use quantified constraints with type families.
