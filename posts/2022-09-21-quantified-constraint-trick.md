@@ -45,16 +45,19 @@ type family F a
 -- (forall a. C (F a))  -- Illegal type family application in a quantified constraint
 ```
 
-A quantified constraint can be thought of as providing a local instance.
-Instance resolution is going to match required constraints with the conclusion
-of a provided quantified constraint to determine whether it applies.
+A quantified constraint can be thought of as providing a local instance,
+and they are subject to a similar restriction on the shape of instance heads
+so that instance resolution may try to match required constraints with
+the head of existing instances.
 
-But type families are not matchable: we cannot determine whether an applied
+Type families are not matchable: we cannot determine whether an applied
 type family `F a` matches a type constructor `T` in a manner satisfying the
 properties required by instance resolution ("coherence"). So type families
 can't be in the conclusion of a type family.
 
 = The quantified constraint trick
+
+== Step 1
 
 To legalize type families in quantified constraints,
 all we need is a *class synonym*:
@@ -66,26 +69,32 @@ instance C (F a) => CF a
 
 That `CF a` is equivalent to `C (F a)`, and `forall a. CF a` is legal.
 
-That Just Works™ since GHC 9.2 and
-[I don't know why.](https://mail.haskell.org/pipermail/haskell-cafe/2022-September/135571.html)
+== Step 2?
 
-For GHC 9.0 and prior, we also need to hold the compiler's hand and tell it how
+Since GHC 9.2, Step 1 alone solves the problem. It Just Works™.
+[And I don't know why.](https://mail.haskell.org/pipermail/haskell-cafe/2022-September/135571.html)
+
+Before that, for GHC 9.0 and prior,
+we also needed to hold the compiler's hand and tell it how
 to instantiate the quantified constraint.
-When you require a constraint `C (F x)`, insert a type signature mentioning the
-`CF x` constraint (using the `CF` class instead of `C`).
 
+Indeed, now functions may have constraints of the form `forall a. CF a`,
+which should imply `C (F x)` for any `x`.
+Although `CF` and `C (F x)` are logically related, when `C (F x)` is required,
+that triggers a search for instances of the class `C`, and not the `CF` which
+is provided by the quantified constraint.
+The search would fail unless some hint is provided to the compiler.
+
+When you require a constraint `C (F x)`, insert a type annotation mentioning
+the `CF x` constraint (using the `CF` class instead of `C`).
 
 ```haskell
 _ {- C (F x) available here -} :: CF x => _
 ```
 
-Although `CF` and `C (F a)` are logically related, when `C (F a)` is required,
-that triggers a search for instances of the class `C`, and not the `CF` which
-is provided by the quantified constraint. The search would fail unless
-that annotation is provided. Inside the annotation (to the left of `::`), we
-are given `CF x`, from which `C (F x)` is inferred as a superclass. Outside the
-annotation, we are requiring `CF x`, which is trivially solved by the
-quantified constraint `forall a. CF a`.
+Inside the annotation (to the left of `::`), we are given `CF x`, from which `C
+(F x)` is inferred as a superclass. Outside the annotation, we are requiring `CF x`,
+which is trivially solved by the quantified constraint `forall a. CF a`.
 
 == Recap
 
@@ -103,12 +112,29 @@ instance C (F a) => CF a
 -- forall a. CF a     -- Yup.
 
 -- Some provided function we want to call.
-f :: C (F a) => a
+f :: C (F t) => t
 
 -- A function we want to implement using f.
-g :: (forall a. C (F a)) => a
+g :: (forall a. CF a) => t
 g = f               -- OK on GHC >= 9.2
-g = f :: CF a => a  -- Annotation needed on GHC <= 9.0
+g = f :: CF t => t  -- Annotation needed on GHC <= 9.0
+```
+
+The part of that type annotation that really matters
+is the constraint. The rest of the type to the right of the arrow
+is redundant. Another way to write only the annotation uses the following
+identity function with a fancy type:
+
+```haskell
+with :: forall c r. (c => r) -> (c => r)
+with x = x
+```
+
+So you can supply the hint like this instead:
+
+```haskell
+g :: forall t. (forall a. CF a) => t
+g = with @(CF t) f
 ```
 
 = Application: *generic-functor*
@@ -160,10 +186,6 @@ gfmap :: forall f a a'. GFunctor f => (a -> a') -> f a -> f a'
 gfmap f =
   with @(RepFmapRep a a' f)             -- Hand-holding for GHC <= 9.0
     (to @_ @() . repFmap f . from @_ @())
-
--- A cute alternative to the "type annotation" part of the trick.
-with :: forall c r. (c => r) -> (c => r)
-with x = x
 ```
 
 Et voilà.
