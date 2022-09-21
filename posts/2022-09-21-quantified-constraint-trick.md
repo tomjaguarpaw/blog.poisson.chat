@@ -122,7 +122,7 @@ g = f :: CF t => t  -- Annotation needed on GHC <= 9.0
 
 The part of that type annotation that really matters
 is the constraint. The rest of the type to the right of the arrow
-is redundant. Another way to write only the annotation uses the following
+is redundant. Another way to write only the constraint uses the following
 identity function with a fancy type:
 
 ```haskell
@@ -139,8 +139,7 @@ g = with @(CF t) f
 
 = Application: *generic-functor*
 
-What do I need that trick for? It comes up in generic metaprogramming with
-parameterized types.
+What do I need that trick for? It comes up in generic metaprogramming.
 
 Imagine deriving `Functor` for `Generic` types (no `Generic1`, which is not as
 general as you might hope). One way is to implement the following class on
@@ -164,14 +163,16 @@ instance ...   -- idem (class synonym)
 ```
 
 But that is illegal, because the type family `Rep` occurs in the conclusion of
-a quantified constraint. Time for the trick! We give a new name to the conclusion:
+a quantified constraint.
+
+Time for the trick! We give a new name to the conclusion:
 
 ```haskell
 class    RepFmap a a' (Rep (f a) ()) (Rep (f a') ()) => RepFmapRep a a' f
 instance ...  -- idem (class synonym)
 ```
 
-And boom, the quantified constraint can be written:
+And we can use it in a quantified constraint:
 
 ```haskell
 -- Now this works!
@@ -201,7 +202,7 @@ If you've followed all of that, there's one other way you might try defining
 actually needed in the body of the function.
 
 ```haskell
--- Bad gfmap!
+-- Dangerous gfmap!
 gfmap ::
   Generic (f a) =>
   Generic (f a') =>
@@ -219,8 +220,11 @@ fmap = gfmap
 Any other use voids a guarantee you didn't know you expected.
 
 The thing I haven't told you is that `RepFmap` is implemented with...
-incoherent instances! In fact, `gfmap` may behave differently depending
-on how it is instantiated *at compile time*.
+incoherent instances![^generick] In fact, this `gfmap` may behave differently
+depending on how it is instantiated *at compile time*.
+
+[^generick]: AFAICT there is no way around that with `GHC.Generics`.
+  Incoherent instances can be avoided with *kind-generics*.
 
 For example, for a functor with a field of constant type:
 
@@ -236,7 +240,7 @@ They all have type `Int`, so a function `Int -> Int` can and will be applied to
 all fields.
 
 I could demonstrate this if I had implemented `RepFmap`...
-Luckily, there is a more general version of this "bad `gfmap`" readily
+Luckily, there is a more general version of this "dangerous `gfmap`" readily
 available in my library
 [*generic-functor*](https://hackage.haskell.org/package/generic-functor).
 It can be very incoherent, but if you follow some rules, it can also be very
@@ -282,14 +286,14 @@ watT = gsolomap
 
 It's important to specialize `gsolomap` with *distinct type variables*
 (`a` and `a'`).
-You cannot refactor code by inlining a function if its body uses `solomap`,
+You cannot refactor code by inlining a function if its body uses `gsolomap`,
 as it risks breaking that requirement.
 
 == Witnessing incoherence
 
-For example, apply the `fmapT` defined above to some concrete
-arguments. See how the result changes then you replace `fmapT` with its
-definition, `gsolomap`.
+For an example of surprising result caused by incoherence, apply the `fmapT`
+defined above to some concrete arguments. See how the result changes then you
+replace `fmapT` with its definition, `gsolomap`.
 
 ```haskell
 fmapT    ((+1) :: Int -> Int) (C 0 0 0) == C 0 0 1 :: T Int Int
@@ -324,7 +328,7 @@ gfmap f = f
 gfmap f = fmap (gfmap f)
 ```
 
-The bad `gfmap` (without `QuantifiedConstraints`) or `gsolomap` fail this
+The dangerous `gfmap` (without `QuantifiedConstraints`) or `gsolomap` fail this
 property, because the extra occurrences of `a` and `a'` in its constraint make
 their signatures have a different "shape" from `fmap`.
 
