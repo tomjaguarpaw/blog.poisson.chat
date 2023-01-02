@@ -73,7 +73,7 @@ computation may call and would provide safe primitives to define new effects is
 left as an exercise for the reader.
 
 This post is written in Literate Haskell ([source code][source]).
-It can be compiled using the development version of GHC (or GHC 9.8 if it has been released).
+It can be compiled using the development version of GHC (or GHC 9.6 if it has been released).
 
 [source]: https://bitbucket.org/lyxia/blog.poisson.chat/src/master/posts/2023-01-02-del-cont-examples.lhs
 
@@ -251,8 +251,8 @@ The underscore is the continuation, which is the slice of the stack below the
 The type of `catch` should also look familiar, with the novelty that the
 handled computation `f` expects a tag---so that it may call `throw`.
 In `catch f onThrow`, a fresh `tag` is generated, then
-`f tag` either returns normally, then its result is wrapped in `Pure a`,
-or `f tag` `throw`s an exception wrapped in `Op (Throw e)`.
+`f tag` either (1) returns normally, and its result is wrapped in `Pure a`,
+or (2) `f tag` throws an exception wrapped in `Op (Throw e)`.
 We then return the result or apply the handler `onThrow` accordingly.
 
 > catch :: (Exception e % a -> Mom a) -> (e -> Mom a) -> Mom a
@@ -830,4 +830,4 @@ as they are making their way into industrial languages:
 >   testState
 >   testEnumerate
 >   testInterleave
->   putStrLn "All tests passed"
+>   putStrLn "All tests passed!"
