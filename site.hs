@@ -104,7 +104,7 @@ main = do
         route idRoute
         compile copyFileCompiler
 
-    match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst)$") $ do
+    match (fromRegex "^(drafts|posts)/" .&&. fromRegex ".(md|rst|lhs)$") $ do
         route $ setExtension "html"
         compile $ myPandocCompiler opts
 
