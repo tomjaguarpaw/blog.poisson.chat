@@ -97,7 +97,7 @@ All tests passed!
 > module DelContExamples where
 > 
 > import qualified Control.Exception as E
-> import Control.Exception.Base (NoMatchingContinuationPrompt(..))
+> -- import Control.Exception.Base (NoMatchingContinuationPrompt(..))
 > import Data.Either
 > import Data.Foldable (for_)
 > import Data.Functor (void)
@@ -105,7 +105,7 @@ All tests passed!
 > import Data.Maybe (fromMaybe, maybe)
 > import System.IO.Unsafe
 > import System.Environment
-> import GHC.Exts (PromptTag#, newPromptTag#, prompt#, control0#)
+> -- import GHC.Exts (PromptTag#, newPromptTag#, prompt#, control0#)
 > import GHC.IO (IO(..))
 > import GHC.Stack (HasCallStack)
 > import Prelude hiding (log)
@@ -129,18 +129,18 @@ The available operations wrap the RTS primitives `newPromptTag#`,
 
 > -- Unsafe primitives
 >
-> data PromptTag a = PromptTag (PromptTag# a)
+> data PromptTag a -- = PromptTag (PromptTag# a)
 > 
 > newPromptTag :: Mom (PromptTag a)
-> newPromptTag = Mom (IO (\s -> case newPromptTag# s of
->   (# s', tag #) -> (# s', PromptTag tag #)))
+> newPromptTag = undefined -- Mom (IO (\s -> case newPromptTag# s of
+>   -- (# s', tag #) -> (# s', PromptTag tag #)))
 >
 > prompt :: PromptTag a -> Mom a -> Mom a
-> prompt (PromptTag tag) (Mom (IO m)) = Mom (IO (prompt# tag m))
+> prompt = undefined -- (PromptTag tag) (Mom (IO m)) = Mom (IO (prompt# tag m))
 > 
 > control0 :: PromptTag a -> ((Mom b -> Mom a) -> Mom a) -> Mom b
-> control0 (PromptTag tag) f =
->   Mom (IO (control0# tag (\k -> case f (\(Mom (IO a)) -> Mom (IO (k a))) of Mom (IO b) -> b)))
+> control0 = undefined -- (PromptTag tag) f =
+>   -- Mom (IO (control0# tag (\k -> case f (\(Mom (IO a)) -> Mom (IO (k a))) of Mom (IO b) -> b)))
 
 The boxing of the continuation `k` in `control0` could be avoided by
 introducing a new type for continuations, replacing `(Mom b -> Mom a)`.
@@ -194,8 +194,9 @@ function.
 
 > -- Look Ma', no IO!
 > run :: Mom a -> Maybe a
-> run (Mom m) = unsafePerformIO
->   (E.catch (Just <$> m) \NoMatchingContinuationPrompt -> pure Nothing)
+> run = undefined
+> -- (Mom m) = unsafePerformIO
+> --  (E.catch (Just <$> m) \NoMatchingContinuationPrompt -> pure Nothing)
 
 Hiding the delimited continuations primitives avoids the danger of duplicating
 and observing the creation of fresh `PromptTag`s in a pure context.
