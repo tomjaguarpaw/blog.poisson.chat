@@ -243,8 +243,8 @@ and returns to it with the exception `e` wrapped in `Throw`.
 The underscore is the continuation, which is the slice of the stack below the
 `catch`, which is thus discarded.
 
-> throw :: Exception e % r -> e -> Mom a
-> throw tag e = control0 tag \_ -> pure (Op (Throw e))
+> throw :: H (Exception e) -> e -> Mom a
+> throw (H tag) e = control0 tag \_ -> pure (Op (Throw e))
 
 == Handler
 
@@ -255,10 +255,10 @@ In `catch f onThrow`, a fresh `tag` is generated, then
 or (2) `f tag` throws an exception wrapped in `Op (Throw e)`.
 We then return the result or apply the handler `onThrow` accordingly.
 
-> catch :: (Exception e % a -> Mom a) -> (e -> Mom a) -> Mom a
+> catch :: (H (Exception e) -> Mom a) -> (e -> Mom a) -> Mom a
 > catch f onThrow = do
 >   tag <- newPromptTag
->   handle tag (f tag)
+>   handle tag (f (H tag))
 >  where
 >   handle tag action = do
 >     next <- prompt tag (Pure <$> action)
@@ -279,10 +279,12 @@ computation/tree of type `Free f r`.
 > data Free f r
 >   = Op (f (Free f r))
 >   | Pure r
+>
+> data H f = forall r. H (f % r)
 
 Using `catch`, we can implement `try`.
 
-> try :: (Exception e % Either e a -> Mom a) -> Mom (Either e a)
+> try :: (H (Exception e) -> Mom a) -> Mom (Either e a)
 > try f = catch (\tag -> Right <$> f tag) (\e -> pure (Left e))
 
 The explicit tags serve as a form of *capabilities*, handles that functions
@@ -330,19 +332,19 @@ When we call `output o :: Mom ()`, that call "bubbles
 up" like an exception, gets caught by a handler, and the call gets replaced by
 `pure ()` or some other `Mom ()` computation.
 
-> output :: Out o % r -> o -> Mom ()
-> output tag o = control0 tag \continue -> pure (Op (Output o continue))
+> output :: H (Out o) -> o -> Mom ()
+> output (H tag) o = control0 tag \continue -> pure (Op (Output o continue))
 
 A synonym specialized to strings.
 
-> log :: Out String % r -> String -> Mom ()
+> log :: H (Out String) -> String -> Mom ()
 > log = output
 
 == Example
 
 An infinite output stream of the Fibonacci sequence.
 
-> fibonacci :: Out Int % r -> Mom a
+> fibonacci :: H (Out Int) -> Mom a
 > fibonacci out = fib 0 1
 >   where
 >     fib !a !b = do
@@ -353,10 +355,10 @@ An infinite output stream of the Fibonacci sequence.
 
 Run a computation lazily and collect its output in a list.
 
-> collect :: (Out o % () -> Mom ()) -> [o]
+> collect :: (H (Out o) -> Mom ()) -> [o]
 > collect f = runList do
 >   tag <- newPromptTag
->   handle tag (Pure <$> f tag)
+>   handle tag (Pure <$> f (H tag))
 >  where
 >   handle tag action = do
 >     next <- prompt tag action
@@ -392,7 +394,7 @@ To be fair, there remain
 [difficulties](https://github.com/hasura/eff/issues/12) in this area even with
 algebraic effects.
 
-> tracedCatch :: Out String % r -> Mom Bool
+> tracedCatch :: H (Out String) -> Mom Bool
 > tracedCatch out = catch this onThrow 
 >  where
 >   this exc = do
@@ -418,10 +420,10 @@ There can also be different ways of handling an effect.
 The following handler discards output instead of collecting it,
 for example to ignore debugging logs.
 
-> discardOutput :: (Out o % a -> Mom a) -> Mom a
+> discardOutput :: (H (Out o) -> Mom a) -> Mom a
 > discardOutput f = do
 >   tag <- newPromptTag
->   handle tag (Pure <$> f tag)
+>   handle tag (Pure <$> f (H tag))
 >  where
 >   handle tag action = do
 >     next <- prompt tag action
@@ -445,8 +447,8 @@ Dually, there is an effect to request some input.
 The `input` call is expected to return a result `i`. As before, the type of the
 `input _` operation must coincide with the domain `Mom i` of the continuation.
 
-> input :: In i % r -> Mom i
-> input tag = control0 tag \continue -> pure (Op (Input continue))
+> input :: H (In i) -> Mom i
+> input (H tag) = control0 tag \continue -> pure (Op (Input continue))
 
 == Example
 
@@ -457,7 +459,7 @@ Until now, an infinite loop in `IO` would either have to be broken by an
 exception (which makes it not actually infinite), or have to involve
 concurrency.
 
-> csum :: In Int % r -> Out Int % r -> Mom a
+> csum :: H (In Int) -> H (Out Int) -> Mom a
 > csum inp out = go 0
 >   where
 >     go !acc = do
@@ -470,10 +472,10 @@ concurrency.
 
 Supply a list of inputs and stop when we run out.
 
-> listInput :: [i] -> (In i % a -> Mom a) -> Mom (Maybe a)
+> listInput :: [i] -> (H (In i) -> Mom a) -> Mom (Maybe a)
 > listInput is f = do
 >   tag <- newPromptTag
->   catch (\exc -> handle exc tag is (Pure <$> f tag))
+>   catch (\exc -> handle exc tag is (Pure <$> f (H tag)))
 >     (\() -> pure Nothing)
 >  where
 >   handle exc tag is action = do
@@ -503,11 +505,11 @@ alternating execution between the consumer and the producer.
 Feed the output of one computation into the input of the other.
 Terminate whenever one side terminates, discarding the other.
 
-> connect :: (Out x % a -> Mom a) -> (In x % a -> Mom a) -> Mom a
+> connect :: (H (Out x) -> Mom a) -> (H (In x) -> Mom a) -> Mom a
 > connect producer consumer = do
 >   out <- newPromptTag
 >   inp <- newPromptTag
->   handleI out inp (Pure <$> producer out) (Pure <$> consumer inp)
+>   handleI out inp (Pure <$> producer (H out)) (Pure <$> consumer (H inp))
 >  where
 >   handleI out inp produce consume = do
 >     next <- prompt inp consume
@@ -526,7 +528,7 @@ Terminate whenever one side terminates, discarding the other.
 Connect two copies of the cumulative sum process: compute the cumulative sum
 of the cumulative sum.
 
-> csum2 :: In Int % () -> Out Int % () -> Mom ()
+> csum2 :: H (In Int) -> H (Out Int) -> Mom ()
 > csum2 inp out = connect (\out' -> csum inp out') (\inp' -> csum inp' out)
 
 > testConnect :: IO ()
@@ -628,12 +630,12 @@ State-passing, no mutation.
 Again, combining state with logging is effortless, because
 effects live in the same underlying monad.
 
-> logState :: Out String % r -> State Int % s -> Mom ()
+> logState :: H (Out String) -> State Int % s -> Mom ()
 > logState out st = do
 >   n <- get st
 >   log out (show n)
 
-> incr2 :: Out String % r -> State Int % s -> Mom ()
+> incr2 :: H (Out String) -> State Int % s -> Mom ()
 > incr2 out st = do
 >   incr st
 >   logState out st
@@ -659,12 +661,12 @@ Choose one element in a list.
 > data Nondet a where
 >   Choose :: [x] -> (Mom x -> Mom a) -> Nondet a
 
-> choose :: Nondet % r -> [x] -> Mom x
-> choose tag xs = control0 tag \continue -> pure (Op (Choose xs continue))
+> choose :: H Nondet -> [x] -> Mom x
+> choose (H tag) xs = control0 tag \continue -> pure (Op (Choose xs continue))
 
 == Example
 
-> nameTheorems :: Nondet % r -> Mom String
+> nameTheorems :: H (Nondet) -> Mom String
 > nameTheorems nd = do
 >   name1 <- choose nd ["Church", "Curry"]
 >   name2 <- choose nd ["Turing", "Howard"]
@@ -677,10 +679,10 @@ Use the output effect to stream all results of a nondeterministic computation.
 Here, the continuation is not used linearly: it is called once for every
 element in the given list.
 
-> enumerate :: (Nondet % a -> Mom a) -> Out a % r -> Mom ()
+> enumerate :: (H Nondet -> Mom a) -> H (Out a) -> Mom ()
 > enumerate f out = do
 >   tag <- newPromptTag
->   handle tag (Pure <$> f tag)
+>   handle tag (Pure <$> f (H tag))
 >  where
 >   handle tag action = do
 >     next <- prompt tag action
@@ -717,19 +719,19 @@ dynamically fork any number of threads and interleave them.
 
 Fork a thread to run the given computation.
 
-> fork :: Conc % r -> Mom () -> Mom ()
-> fork tag thread = control0 tag \continue -> pure (Op (Fork thread continue))
+> fork :: H Conc -> Mom () -> Mom ()
+> fork (H tag) thread = control0 tag \continue -> pure (Op (Fork thread continue))
 
 Cooperative concurrency: threads must yield explicitly.
 
-> yield :: Conc % r -> Mom ()
-> yield tag = control0 tag \continue -> pure (Op (Yield continue))
+> yield :: H Conc -> Mom ()
+> yield (H tag) = control0 tag \continue -> pure (Op (Yield continue))
 
 == Example
 
 A thread that repeats an output value three times.
 
-> simpleThread :: Out String % r -> Conc % s -> Int -> Mom ()
+> simpleThread :: H (Out String) -> H Conc -> Int -> Mom ()
 > simpleThread out conc n = do
 >   log out (show n)
 >   yield conc
@@ -740,7 +742,7 @@ A thread that repeats an output value three times.
 
 Interleave `111`, `222`, `333`.
 
-> interleave123 :: Out String % r -> Conc % s -> Mom ()
+> interleave123 :: H (Out String) -> H Conc -> Mom ()
 > interleave123 out conc = do
 >   fork conc (simpleThread out conc 1)
 >   fork conc (simpleThread out conc 2)
@@ -755,10 +757,10 @@ forks another thread, the forked thread is pushed to the end of the queue,
 and we continue in the main thread (forking does not yield).
 If the thread terminates, we remove it from the queue.
 
-> runConc :: (Conc % () -> Mom ()) -> Mom ()
+> runConc :: (H Conc -> Mom ()) -> Mom ()
 > runConc f = do
 >   tag <- newPromptTag
->   handle tag [Pure <$> f tag]
+>   handle tag [Pure <$> f (H tag)]
 >  where
 >   handle tag [] = pure ()
 >   handle tag (thread : threads) = do
